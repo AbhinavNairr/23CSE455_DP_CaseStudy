@@ -76,10 +76,16 @@ Diffs: `Part2/changes/ChangeN/diff/`. Evidence and summary: `test_result/`.
 
 ## Part 3
 
-Cross-language comparison of **Strategy** (slot allocation) and **State** (EV
-charging) in JavaScript, Python, Java and C++. All 8 suites pass. Snippets under
-`Part3/Strategy/<lang>` and `Part3/State/<lang>`; raw run logs in
-`Part3/evidence/`; metrics in `data/cross_language.csv`.
+Cross-language comparison of all six confirmed pattern types — **Strategy** (slot
+allocation), **State** (EV charging), **Observer** (slot occupancy), **Repository**
+(user accounts), **Dependency Injection** (notification channels) and **Layered
+Architecture** (reservation handling) — in JavaScript, Python, Java and C++. All
+24 suites pass (one per pattern per language). Snippets under
+`Part3/<Pattern>/<lang>/`; raw run logs in `Part3/evidence/`; metrics in
+`data/cross_language.csv`.
+
+Part 3 scope was resolved in favour of the literal instruction "for each detected
+pattern type"; the decision is recorded in `Part3/Part3_scope_decision_note.md`.
 
 ## LLM Usage
 

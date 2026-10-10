@@ -35,9 +35,11 @@ Part~2 implements three evolution changes on top of the baseline --- dynamic
 slot allocation (a second Strategy instance), EV charging (introducing the
 \textbf{State} pattern) and real-time occupancy monitoring (introducing the
 \textbf{Observer} pattern) --- each captured as a sequential diff and covered by
-passing tests. Part~3 compares the \textbf{Strategy} and \textbf{State} patterns
-across JavaScript, Python, Java and C++ on lines of code, cyclomatic complexity
-and process runtime.
+passing tests. Part~3 compares all six confirmed pattern types ---
+\textbf{Strategy}, \textbf{State}, \textbf{Observer}, \textbf{Repository},
+\textbf{Dependency Injection} and \textbf{Layered Architecture} --- across
+JavaScript, Python, Java and C++ on lines of code, cyclomatic complexity and
+process runtime.
 \end{abstract}
 
 \noindent\textbf{Evidence policy.}
@@ -351,16 +353,23 @@ fail identically on the untouched baseline and are unrelated to Part~2. Evidence
 \path{test_result/baseline_preexisting_failures_raw.txt}.
 
 \section{Part 3 Cross-language Comparison}
-The two patterns central to this case study --- \textbf{Strategy} (slot
-allocation) and \textbf{State} (EV charging session) --- were implemented from
-scratch in JavaScript, Python, Java and C++, each with a self-contained test.
-All eight suites pass (Strategy 5/5 and State 13/13 in every language). The
-comparison records lines of code (production snippet only, excluding blanks,
-comments and tests), maximum function cyclomatic complexity, and median
-whole-process wall time (one warm-up discarded, five runs, high-resolution
-timer; compile time excluded). Rules and per-run logs are in
-\path{Part3/evidence/} and the snippets under
-\path{Part3/Strategy/<lang>} and \path{Part3/State/<lang>}.
+The six confirmed pattern types central to this case study --- \textbf{Strategy}
+(slot allocation), \textbf{State} (EV charging session), \textbf{Observer} (slot
+occupancy notification), \textbf{Repository} (user account persistence),
+\textbf{Dependency Injection} (notification channel injection) and \textbf{Layered
+Architecture} (reservation request handling) --- were each implemented from
+scratch in JavaScript, Python, Java and C++, every implementation with a
+self-contained test. All 24 suites pass (Strategy 5/5, State 13/13, Observer 8/8,
+Repository 8/8, Dependency Injection 6/6 and Layered Architecture 8/8 in every
+language). The comparison records lines of code (production snippet only,
+excluding blanks, comments and tests), maximum function cyclomatic complexity, and
+median whole-process wall time (one warm-up discarded, five runs,
+high-resolution timer; compile time excluded). Rules and per-run logs are in
+\path{Part3/evidence/} and the snippets under \path{Part3/<Pattern>/<lang>}. This
+scope --- one representative instance of \emph{every} confirmed pattern type ---
+follows the instruction "for each detected pattern type, implement its small
+problem in all four languages"; the decision is recorded in
+\path{Part3/Part3_scope_decision_note.md}.
 
 \begin{center}
 \small
@@ -377,17 +386,39 @@ State & JavaScript & 94 & 1 & 73.15 \\
 State & Python & 57 & 1 & 67.42 \\
 State & Java & 83 & 1 & 173.18 \\
 State & C++ & 97 & 2 & 20.83 \\
+\midrule
+Observer & JavaScript & 56 & 3 & 75.32 \\
+Observer & Python & 33 & 3 & 65.18 \\
+Observer & Java & 44 & 3 & 159.11 \\
+Observer & C++ & 44 & 3 & 15.94 \\
+\midrule
+Repository & JavaScript & 58 & 2 & 78.93 \\
+Repository & Python & 43 & 1 & 104.62 \\
+Repository & Java & 56 & 1 & 143.41 \\
+Repository & C++ & 46 & 2 & 16.19 \\
+\midrule
+Dependency Injection & JavaScript & 43 & 1 & 80.49 \\
+Dependency Injection & Python & 25 & 1 & 45.41 \\
+Dependency Injection & Java & 36 & 1 & 141.08 \\
+Dependency Injection & C++ & 34 & 1 & 17.05 \\
+\midrule
+Layered Architecture & JavaScript & 51 & 2 & 74.70 \\
+Layered Architecture & Python & 34 & 3 & 89.70 \\
+Layered Architecture & Java & 53 & 3 & 148.05 \\
+Layered Architecture & C++ & 48 & 3 & 15.81 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-Python produces the shortest snippets; Java is the most verbose; the statically
-linked C++ binary is roughly an order of magnitude faster, while the timed Java
-and Python figures are dominated by VM/interpreter startup. For Strategy, C++
-has the highest complexity because its pointer-returning \texttt{choose()} method
-forces null guards; for State, the pattern moves transition logic into
-polymorphic objects, leaving the garbage-collected implementations branch-free
-(CC~1), with C++ at 2 only for a manual memory-management guard. All values are
+Python produces the shortest snippets; Java and C++ are the most verbose; the
+statically linked C++ binaries are roughly an order of magnitude faster, while the
+timed Java and Python figures are dominated by VM/interpreter startup. Cyclomatic
+complexity is low throughout: the State, Dependency Injection and (most)
+Repository snippets are branch-free in the garbage-collected languages (CC~1)
+because behaviour is delegated to polymorphic or injected collaborators.
+Strategy has the highest complexity --- C++ reaches 8 through the null guards its
+pointer-returning \texttt{choose()} requires --- while Observer carries a
+subscriber loop and a detach guard (CC~3) in every language. All values are
 taken directly from \texttt{data/cross\_language.csv}.
 
 \section{LLM Records and Human Verification}
@@ -430,11 +461,12 @@ style: Change~1 adds an application Strategy alongside the Passport/JWT Strategy
 Change~2 introduces State, and Change~3 introduces Observer --- the last two
 having been recorded as rejected/not-found at baseline. (iii) All 21 new tests
 pass; the only suite failures are three pre-existing baseline defects unrelated
-to the changes. (iv) In the cross-language study the State pattern yields
-branch-free implementations in the garbage-collected languages, Python is the
-most concise, Java the most verbose, and the native C++ binary is roughly an
-order of magnitude faster than the VM/interpreter languages when timing
-includes runtime startup.
+to the changes. (iv) In the cross-language study all six confirmed pattern types
+were implemented in the four languages; the State, Dependency Injection and most
+Repository variants are branch-free in the garbage-collected languages, Python is
+the most concise, Java the most verbose, and the native C++ binary is roughly an
+order of magnitude faster than the VM/interpreter languages when timing includes
+runtime startup.
 \end{sloppypar}
 
 \noindent\textbf{Contributions.} Real, runnable artifacts for Parts~2 and~3;
@@ -494,7 +526,7 @@ Team folder: \texttt{B12/}
   \item \path{data/pattern_counts.csv} --- per-version pattern counts, with
         per-pattern and total rows (27 data rows plus a header)
   \item \path{data/cross_language.csv} --- cross-language comparison records
-        (8 data rows plus a header)
+        (24 data rows plus a header)
   \item \texttt{data/llm.csv} --- LLM prompt/input/output/verification records
         (1 data row plus a header)
   \item \texttt{Part1/}, \texttt{Part2/}, \texttt{Part3/} --- per-part reports,
@@ -508,7 +540,7 @@ Team folder: \texttt{B12/}
 (7 baseline records plus 27 post-change records) hold the Part~1 and Part~2
 results; \path{pattern_counts.csv} (6 baseline records plus 21 post-change
 records, per-pattern and total rows) summarises the counts per version.
-\path{cross_language.csv} holds the 8 Part~3 comparison records and
+\path{cross_language.csv} holds the 24 Part~3 comparison records and
 \texttt{llm.csv} the single honest LLM record.
 \end{sloppypar}
 
