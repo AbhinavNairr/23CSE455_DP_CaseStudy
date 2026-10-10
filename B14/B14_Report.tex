@@ -1,0 +1,378 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{graphicx,booktabs,longtable,array,listings,xcolor}
+\usepackage[hidelinks]{hyperref}
+\newcommand{\code}[1]{\path{#1}}
+\newcommand{\todo}[1]{\textcolor{red}{[#1]}}
+% Include an image if the file exists, otherwise print a red note instead of failing.
+\newcommand{\maybeimg}[2]{\IfFileExists{#1}{\includegraphics[width=#2]{#1}}{\todo{missing image: \detokenize{#1}}}}
+\lstset{basicstyle=\ttfamily\footnotesize,frame=single,breaklines=true,columns=fullflexible}
+\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries 23CSE455 Design Patterns\\Case Study Report}\\[6pt]
+\end{center}
+
+\begin{tabular}{@{}ll@{}}
+\textbf{Team:} & B14\\
+\textbf{Case study:} & Design Pattern Identification and Evolution in a Next.js-Based\\
+ & Digital News and Publishing Application\\
+\textbf{Application:} & Next.js Blog CMS (faculty approval: \todo{name, date})\\
+\textbf{Date:} & 2026-10-10\\
+\textbf{Submission repository:} & 23CSE455\_DP\_CaseStudy
+\end{tabular}
+
+\subsection*{Students}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Roll number & Student name & Batch\\
+\midrule
+AM.SC.U4AIE23121 & Keziah Suzaine George & AIE\\
+AM.SC.U4AIE23139 & Nivedita Ramesh & AIE\\
+AM.SC.U4CSE23360 & Soorya Krishna & CSE\\
+AM.SC.U4CSE23309 & B R Govind & CSE\\
+\bottomrule
+\end{tabular}
+
+%------------------------------------------------------------
+\section{Application and architecture}
+
+\textbf{Original source.}
+Repository: \url{https://github.com/thepracticalengineer/nextjs-blog-cms.git}.
+Baseline commit: \code{90ec6565877053ee0e93e9f09dcc7c7213aa4832}
+(merge of pull request \#102, 8 October 2026). Access date: 2026-10-10. License: MIT.
+
+\textbf{Application.} A full-stack blog CMS with a TipTap editor, Supabase
+authentication including MFA, Admin and Author roles, a draft and publication
+workflow, comments, tags and categories, public author profiles, newsletter
+subscriptions, an AI writing assistant (Claude, Gemini, OpenAI) and a developer REST API.
+
+\textbf{Environment.}
+\begin{tabular}{@{}ll@{}}
+Node.js & 24.14.0 (repository requests 24.21.0; mismatch noted, nothing failed)\\
+Package manager & pnpm 10.29.3\\
+Framework & Next.js 16.3.8 (App Router), React 19.3.0, TypeScript 6.0.3\\
+Database and auth & Supabase (supabase-js 2.117.2, @supabase/ssr 0.12.7)\\
+Other & Zustand 5.0.15, Zod 4.6.5, Vitest 5.0.3, Playwright 1.63.0\\
+\end{tabular}
+
+\textbf{Scope.} Inspected: \code{app/}, \code{components/}, \code{features/},
+\code{lib/} and \code{proxy.ts}. Excluded: \code{node_modules}, \code{.next},
+\code{.git}, \code{.husky}, \code{.github}, \code{.agents}, \code{.claude},
+\code{docs/}, \code{public/}, \code{database/}, \code{supabase/migrations/},
+\code{e2e/}, \code{__tests__/}, lockfiles and generated files. Reason: not
+application logic or not relevant to pattern discovery. Unit tests were used only
+as supporting evidence. The source copy in \code{code/} equals the baseline commit
+minus \code{.husky}, \code{.github}, \code{tsconfig.tsbuildinfo} and
+\code{package-lock.json}.
+
+\textbf{Architecture.}
+\begin{figure}[htbp]
+\centering
+\maybeimg{Part1/architecture.png}{\linewidth}
+\caption{Architecture of the application at the baseline commit.}
+\end{figure}
+
+The browser reaches public pages, dashboard pages, authentication pages and API
+routes. Dashboard and authentication paths pass through \code{proxy.ts} first; its
+\code{matcher} covers only \code{/dashboard}, \code{/login}, \code{/register},
+\code{/mfa}, \code{/forgot-password} and \code{/reset-password}, so public pages do
+not. Pages and routes call domain modules in \code{features/}, which use the
+Supabase client creators in \code{lib/supabase}, the permission table in
+\code{lib/permissions}, the LLM service and the notification modules.
+
+\textbf{Request flow (admin opens the Users page).} The browser requests
+\code{/dashboard/admin/users}. Next.js first runs \code{proxy.ts}, which refreshes
+the Supabase session with \code{supabase.auth.getUser()} (line 34), redirects
+unauthenticated users to \code{/login}, sends users with an enrolled but unverified
+second factor to \code{/mfa}, and, for paths under \code{/dashboard/admin}, reads
+the user's role from the \code{profiles} table and redirects non-admins to
+\code{/dashboard}. When the request passes, the server component \code{UsersPage}
+(\code{app/(dashboard)/dashboard/admin/users/page.tsx}) runs. It calls
+\code{requirePermission('users:read')} (line 9), loads data with
+\code{getAllUsers()} from \code{features/users/queries} (line 11) and renders
+\code{UserTable} (line 21). In the browser, \code{AuthProvider} keeps session state
+current by observing \code{supabase.auth.onAuthStateChange}.
+
+\textbf{Run instructions.} See \code{README.md}. Results at the baseline:
+
+\begin{tabular}{@{}p{5.6cm}p{9.6cm}@{}}
+\toprule
+Command & Result\\
+\midrule
+\code{pnpm install --frozen-lockfile} & Succeeded, 933 packages\\
+\code{pnpm run test:run} & 927 of 927 passed in 83 files on default settings (runs of 71.43 s and 80.10 s). Log: \code{test_result/test_result_vitest.log}\\
+\code{pnpm exec vitest run --testTimeout=30000 --maxWorkers=2} & 83 test files passed, 927 of 927 tests passed (222.58 s). Screenshot: \code{test_result/vitest_summary.png}\\
+\code{pnpm run typecheck} & Passed. Log: \code{test_result/typecheck.log}; screenshot: \code{test_result/typecheck.png}\\
+\code{pnpm run dev}, \code{pnpm run test:e2e} & Not run: Docker is not installed, so local Supabase was unavailable\\
+\bottomrule
+\end{tabular}
+
+Two further default-setting runs under heavy machine load failed with 6 and 12
+failures (130 s and 188 s). Every failure was a 5000 ms timeout in a jsdom UI test,
+or a follow-on assertion in the same file after a timeout. The repository sits in a
+OneDrive-synced folder. With a 30 s timeout and 2 workers the same code passed
+927 of 927, so the failures were timing-related and not application defects.
+
+\begin{figure}[htbp]
+\centering
+\maybeimg{test_result/vitest_summary.png}{0.9\linewidth}\\[4pt]
+\maybeimg{test_result/typecheck.png}{0.9\linewidth}
+\caption{Passing unit-test run and typecheck at the baseline commit.}
+\end{figure}
+
+%------------------------------------------------------------
+\section{Part 1: Pattern discovery}
+
+\textbf{Method.} Candidates were found by reading the file listing and then
+reading the likely files in full with line numbers (saved in
+\code{Part1/evidence/}). Each candidate was checked against three questions: what
+problem it solves here, whether every role maps to a real symbol, and whether the
+participants interact as the pattern defines. A class name, a file name or an
+LLM statement alone was not accepted as evidence. Combined or absent roles are
+stated in the records; no classes were invented.
+
+\subsection{Totals at the baseline}
+\begin{tabular}{@{}p{5.5cm}p{9.7cm}@{}}
+\toprule
+Confirmed pattern types & 3 (Strategy, Observer, Role-Based Access Control)\\
+Confirmed pattern instances & 3\\
+Concrete participant classes & 7, all functions or components rather than classes: \code{streamClaude}, \code{streamOpenAI}, \code{streamGemini}; \code{AuthProvider}; \code{can}, \code{canAccess}, \code{canAny}\\
+Unique participant symbols & 15 application symbols, plus 1 from a dependency (\code{supabase.auth.onAuthStateChange})\\
+Rejected candidates & 7\\
+Uncertain candidates & 1\\
+Observation scope & Files listed in \code{Part1/rejected_uncertain.md}, at the baseline commit\\
+\bottomrule
+\end{tabular}
+
+\subsection{Pattern inventory}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+Pattern type & Instance name & Instances & Concrete classes\\
+\midrule
+Strategy & LLM Provider Streaming Strategy & 1 & 3\\
+Observer & Auth State Observer & 1 & 1\\
+RBAC & RBAC Permission Table & 1 & 3\\
+\bottomrule
+\end{tabular}
+
+\subsection{Records for each pattern instance}
+
+%---------------- Strategy
+\subsubsection*{Instance 1: LLM Provider Streaming Strategy}
+\textbf{Pattern type and category:} Strategy, GoF behavioral.
+\textbf{Purpose and origin:} streams chat replies from Claude, OpenAI or Gemini
+through one call; application code.
+
+\begin{longtable}{@{}p{3.2cm}p{5.8cm}p{6.2cm}@{}}
+\toprule
+Role & Symbol & File and lines\\
+\midrule
+\endhead
+Strategy & Not separately declared (implicit signature \code{(params: SendMessageParams) => AsyncGenerator<string>}) & \code{features/ai-assistant/llmService.ts}:10--16 (params type)\\
+ConcreteStrategy & \code{streamClaude} & same file:69--90\\
+ConcreteStrategy & \code{streamOpenAI} & same file:94--118\\
+ConcreteStrategy & \code{streamGemini} & same file:129--146\\
+Context & \code{sendMessage} & same file:150--155\\
+\bottomrule
+\end{longtable}
+
+\textbf{Evidence.} The three functions share one parameter type and return type.
+The context selects one at run time from \code{params.provider} and delegates:
+\begin{lstlisting}
+export function sendMessage(params: SendMessageParams): AsyncGenerator<string> {
+  if (params.provider === 'claude') return streamClaude(params)
+  if (params.provider === 'openai') return streamOpenAI(params)
+  if (params.provider === 'gemini') return streamGemini(params)
+  throw new Error(`Unsupported provider: ${params.provider}`)
+}
+\end{lstlisting}
+\textbf{Limitation.} There is no declared interface, and selection is a hard-coded
+\code{if} chain rather than injection or a registry.
+
+\begin{figure}[htbp]\centering
+\maybeimg{Part1/uml_strategy.png}{0.85\linewidth}
+\caption{UML for the Strategy instance (source: \texttt{Part1/uml\_strategy.mmd}).}
+\end{figure}
+
+\textbf{Verification:} Confirmed. Reviewers: team B14. Method: source reading of
+the listed ranges; \code{__tests__/ai-assistant/llmService.test.ts} (20 tests)
+passes in the baseline run but was not the sole evidence.
+Alternative considered: the repeated provider branches in
+\code{generateBlogPost}, \code{generateBlogPostHeadless}, \code{generateChatTitle}
+and \code{validateProviderKey} (lines 157--386) do not apply Strategy; see the
+rejected list.
+
+%---------------- Observer
+\subsubsection*{Instance 2: Auth State Observer}
+\textbf{Pattern type and category:} Observer, GoF behavioral.
+\textbf{Purpose and origin:} keeps UI session and profile state in sync with login,
+logout and token refresh; application code using the Supabase dependency.
+
+\begin{longtable}{@{}p{3.2cm}p{5.8cm}p{6.2cm}@{}}
+\toprule
+Role & Symbol & File and lines\\
+\midrule
+\endhead
+Subject & \code{supabase.auth} (dependency, not application code) & \code{features/auth/context/AuthProvider.tsx}:37--39\\
+ConcreteObserver & \code{AuthProvider}, via the callback given to \code{onAuthStateChange} & same file:9--59 (callback 39--48)\\
+Detach & \code{subscription.unsubscribe()} & same file:50\\
+State holder & \code{AuthContext}, \code{AuthContext.Provider} & \code{AuthContext.tsx}:14--19; \code{AuthProvider.tsx}:54--58\\
+Consumers & \code{useAuth}; \code{useSession} & \code{AuthContext.tsx}:21--23; \code{features/auth/hooks/useSession.ts}:5--8\\
+\bottomrule
+\end{longtable}
+
+\textbf{Evidence.} The component subscribes, updates state when the callback
+fires, and unsubscribes in the effect cleanup:
+\begin{lstlisting}
+const { data: { subscription } } = supabase.auth.onAuthStateChange(
+  async (_event, session) => { setSession(session); setUser(session?.user ?? null); ... })
+return () => subscription.unsubscribe()
+\end{lstlisting}
+The subject belongs to \code{@supabase/supabase-js}, so no subject class is
+invented. React Context is the delivery mechanism to consumers and is not counted
+as a second instance.
+
+\begin{figure}[htbp]\centering
+\maybeimg{Part1/uml_observer.png}{0.85\linewidth}
+\caption{UML for the Observer instance (source: \texttt{Part1/uml\_observer.mmd}).}
+\end{figure}
+
+\textbf{Verification:} Confirmed. Reviewers: team B14. Method: source reading of
+\code{AuthProvider.tsx}, \code{AuthContext.tsx} and \code{useSession.ts}.
+
+%---------------- RBAC
+\subsubsection*{Instance 3: RBAC Permission Table}
+\textbf{Pattern type and category:} Role-Based Access Control, architecture and
+security pattern (not a GoF pattern). \textbf{Purpose and origin:} centralizes
+which role may perform which action; application code.
+
+\begin{longtable}{@{}p{3.2cm}p{5.8cm}p{6.2cm}@{}}
+\toprule
+Role & Symbol & File and lines\\
+\midrule
+\endhead
+Permission table & \code{rolePermissions} & \code{lib/permissions/index.ts}:3--30\\
+Check & \code{can} & same file:32--35\\
+All-of check & \code{canAccess} & same file:37--40\\
+Any-of check & \code{canAny} & same file:42--45\\
+Types & \code{Role}; \code{Permission} & \code{lib/permissions/types.ts}:1; 3--18\\
+\bottomrule
+\end{longtable}
+
+\textbf{Evidence.} \code{rolePermissions} maps each of the roles \code{admin} and
+\code{author} to a list of permissions. \code{can} looks up the table, and
+\code{canAccess} and \code{canAny} apply \code{every} and \code{some} over
+\code{can}:
+\begin{lstlisting}
+export function can(role: Role | null | undefined, permission: Permission): boolean {
+  if (!role) return false
+  return rolePermissions[role]?.includes(permission) ?? false
+}
+\end{lstlisting}
+
+\begin{figure}[htbp]\centering
+\maybeimg{Part1/uml_rbac.png}{0.8\linewidth}
+\caption{UML for the RBAC instance (source: \texttt{Part1/uml\_rbac.mmd}).}
+\end{figure}
+
+\textbf{Verification:} Confirmed as an architecture pattern. Reviewers: team B14.
+Method: source reading; \code{__tests__/lib/permissions.test.ts} (29 tests) passes
+in the baseline run.
+
+\subsection{Rejected and uncertain candidates}
+\textbf{Uncertain (1).} \code{proxy.ts} guard pipeline (lines 4--117): sequential
+guard checks in one function. It resembles Chain of Responsibility, but there is no
+handler interface, no successor links and no separate handlers, so roles cannot be
+mapped without inventing classes. Classified as a Next.js framework idiom.
+
+\textbf{Rejected (7).}
+\begin{longtable}{@{}cp{5cm}p{9.5cm}@{}}
+\toprule
+\# & Candidate & Reason\\
+\midrule
+\endhead
+R1 & Supabase client creators as Factory Method & Four standalone functions chosen by import path; no creator hierarchy or polymorphic selection; \code{createStaticClient} can return null, so they share no contract\\
+R2 & User-confirmed notifications as Observer & \code{route.ts}:67--74 calls two functions in \code{Promise.all}, each with its own catch; no subscriber list or notifier interface\\
+R3 & \code{sendNewsletterEmail} & Single function wrapping Resend; one participant\\
+R4 & Publication validation as State or Specification & \code{status} is a plain string; one function with sequential checks, no rule objects\\
+R5 & Repeated provider \code{if} chains & Strategy is not applied; branching duplicated (Part 2 refactoring target)\\
+R6 & Helper functions & \code{buildSystemPrompt}, \code{resolveGeminiModel}, \code{isRateLimitError}, \code{escapeHtml}, \code{sanitizeSubject}: plain utilities\\
+R7 & React Context as a separate Observer & Folded into the Auth State Observer to avoid double counting\\
+\bottomrule
+\end{longtable}
+
+%------------------------------------------------------------
+\section{Part 2: Evolution and refactoring}
+\todo{Not started. Three changes: article recommendation, content moderation, subscription/paywall.}
+
+\section{Part 3: Cross-language comparison}
+\todo{Not started.}
+
+%------------------------------------------------------------
+\section{LLM records and human verification}
+
+\textbf{Run and model.} Part 1 pattern analysis used an LLM chat assistant on
+2026-10-10. The displayed model name, exact prompts, raw outputs and the
+evaluation of each analysis are recorded in \code{Part1/llm.csv},
+\code{Part1/Part1_prompt.txt} and \code{Part1/llm/}.
+
+\textbf{Claims and evaluation.} Every pattern claim was checked against the
+numbered source listings in \code{Part1/evidence/}. Corrections made after
+verification: the line number given for \code{getUser()} in \code{proxy.ts} was
+wrong and the true line is 34; a claim that the Users page uses \code{can()} and
+the server Supabase client was unsupported, since the page calls
+\code{requirePermission} and \code{getAllUsers}, so it was removed; and an initial
+Observer guess for the user-confirmed notification fan-out was rejected after
+reading \code{route.ts}. No generated code was used in Part 1.
+
+%------------------------------------------------------------
+\section{Findings, contributions and references}
+
+\textbf{Findings.} At the baseline commit, three pattern instances were confirmed
+(Strategy, Observer, RBAC), one candidate is uncertain and seven were rejected.
+The application mostly relies on framework idioms and plain functions rather than
+classical GoF structures. The Strategy is function-based with an \code{if}-chain
+selector and no declared interface. The Observer subject comes from a dependency.
+RBAC is an architectural pattern. Of the eight areas in the brief, articles,
+authors, categories, comments, authentication and newsletter subscription exist;
+moderation exists only as comment deletion, and recommendations and a paywall were
+not found. Limitations: the app was not run (no Docker), and behavior was verified
+from source and the unit-test suite only.
+
+\textbf{Contributions.}
+\begin{tabular}{@{}p{3.3cm}p{3.6cm}p{1.2cm}p{6.6cm}@{}}
+\toprule
+Roll number & Name & Batch & Contribution\\
+\midrule
+AM.SC.U4AIE23121 & Keziah Suzaine George & AIE & \todo{actual contribution}\\
+AM.SC.U4AIE23139 & Nivedita Ramesh & AIE & \todo{actual contribution}\\
+AM.SC.U4CSE23360 & Soorya Krishna & CSE & \todo{actual contribution}\\
+AM.SC.U4CSE23309 & B R Govind & CSE & \todo{actual contribution}\\
+\bottomrule
+\end{tabular}
+
+\textbf{References.}
+\begin{enumerate}
+\item E.~Gamma, R.~Helm, R.~Johnson, J.~Vlissides, \emph{Design Patterns: Elements of Reusable Object-Oriented Software}, Addison-Wesley, 1994.
+\item R.~Sandhu, E.~Coyne, H.~Feinstein, C.~Youman, ``Role-Based Access Control Models,'' \emph{IEEE Computer} 29(2), 1996.
+\item Next.js Blog CMS, \url{https://github.com/thepracticalengineer/nextjs-blog-cms}, commit 90ec656, MIT license.
+\item Next.js documentation, \url{https://nextjs.org/docs}.
+\item Supabase documentation, \url{https://supabase.com/docs}.
+\item Mermaid, \url{https://mermaid.js.org}.
+\end{enumerate}
+
+\section{Team folder and datasets}
+\begin{figure}[htbp]\centering
+\maybeimg{test_result/github_team_folder.png}{\linewidth}
+\caption{Team folder B14 in the course repository.}
+\end{figure}
+\begin{figure}[htbp]\centering
+\maybeimg{test_result/github_part1.png}{\linewidth}
+\caption{Part1 folder in the course repository.}
+\end{figure}
+
+\end{document}
