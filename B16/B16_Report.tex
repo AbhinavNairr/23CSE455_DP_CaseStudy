@@ -65,7 +65,7 @@ Factory Method & B2 Engine Collaborator Factory Methods & 1 & 2\\
 \bottomrule\end{longtable}
 
 \subsection{One record for each pattern instance}
-Each record gives the pattern, the purpose (as evidence) and every participant with its file and line range. Paths are shortened to module/.../file; the full paths are in \path{data/patterns.csv}. All instances are JUnit framework code. Diagrams are in Appendix~\ref{app:uml}.
+Each record gives the pattern, the purpose (as evidence) and every participant with its file and line range. Paths are shortened to module/.../file; the full paths are in \path{data/patterns.csv}. All instances are JUnit framework code. Each record names its diagram; PlantUML sources and PNGs for all 35 instances are in \path{Part1/uml/}.
 
 \subsubsection*{Area A: discovery and test descriptors}
 \paragraph{A1 Test Descriptor Tree} \textbf{Pattern:} Composite (Structural, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 12.\par
@@ -90,7 +90,7 @@ Client & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbreak{}engin
 \bottomrule\end{longtable}
 \textbf{Evidence:} Engines build one tree of TestDescriptor nodes (engine \textgreater{} class \textgreater{} nested class \textgreater{} method \textgreater{} dynamic test); the launcher filters, prunes, visits and executes it without knowing node kinds. Evidence: TestDescriptor.accept visits itself then calls child.accept(visitor); AbstractTestDescriptor holds the children set and findByUniqueId recurses; NodeTestTask creates one child task per child. Transparent variant: leaf vs container is decided by getType().\par
 \textbf{Key code:} \texttt{this.\allowbreak{}get\allowbreak{}Children().\allowbreak{}for\allowbreak{}Each(child -\textgreater{} child.\allowbreak{}accept(visitor));} (TestDescriptor.java:348)\par
-\textbf{Diagram:} \path{Part1/uml/png/A1.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/A1.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{A2 Composed Discovery Filter} \textbf{Pattern:} Composite (Structural, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 3.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -103,7 +103,7 @@ Client & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbreak{}launc
 \bottomrule\end{longtable}
 \textbf{Evidence:} All post-discovery filters are merged into one Filter by Filter.composeFilters; CompositeFilter implements Filter, holds a list of Filters and combines their FilterResults into one answer (first exclusion wins). Overlaps A3 (same leaf classes seen as strategies).\par
 \textbf{Key code:} \texttt{.\allowbreak{}map(filter -\textgreater{} filter.\allowbreak{}apply(element))} (CompositeFilter.java:62)\par
-\textbf{Diagram:} \path{Part1/uml/png/A2.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/A2.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{A3 Post-Discovery Filter Policies} \textbf{Pattern:} Strategy (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 3.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -115,7 +115,7 @@ Context & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbreak{}laun
 \bottomrule\end{longtable}
 \textbf{Evidence:} Selection rules (tag expressions, method-name patterns, custom filters) are interchangeable algorithms behind PostDiscoveryFilter; EngineDiscoveryOrchestrator only calls apply(). Overlaps A2.\par
 \textbf{Key code:} \texttt{Filter\allowbreak{}Result filter\allowbreak{}Result = post\allowbreak{}Discovery\allowbreak{}Filter.\allowbreak{}apply(descriptor);} (EngineDiscoveryOrchestrator.java:230)\par
-\textbf{Diagram:} \path{Part1/uml/png/A3.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/A3.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{A4 Jupiter Descriptor Skeletons} \textbf{Pattern:} Template Method (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 3.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -130,7 +130,7 @@ ConcreteClass (primitive) & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.
 \bottomrule\end{longtable}
 \textbf{Evidence:} JupiterTestDescriptor fixes algorithms in final methods (getExecutionMode, getLegacyReportingName) and in copyIncludingDescendants, which calls the abstract primitive withUniqueId; subclasses override the hooks (getExplicitExecutionMode, getLegacyReportingBaseName, withUniqueId).\par
 \textbf{Key code:} \texttt{public final Execution\allowbreak{}Mode get\allowbreak{}Execution\allowbreak{}Mode() \{} (JupiterTestDescriptor.java:163; see JupiterTestDescriptor.java:163, 268)\par
-\textbf{Diagram:} \path{Part1/uml/png/A4.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/A4.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{A5 Child Ordering Skeleton} \textbf{Pattern:} Template Method (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 2.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -142,7 +142,7 @@ ConcreteClass & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.\allowbreak{
 \bottomrule\end{longtable}
 \textbf{Evidence:} AbstractOrderingVisitor.orderChildrenTestDescriptors runs a fixed ordering algorithm (select, wrap, sort, unwrap, merge) and asks the abstract hook shouldNonMatchingDescriptorsComeBeforeOrderedOnes, which ClassOrderingVisitor and MethodOrderingVisitor answer differently.\par
 \textbf{Key code:} \texttt{if (should\allowbreak{}Non\allowbreak{}Matching\allowbreak{}Descriptors\allowbreak{}Come\allowbreak{}Before\allowbreak{}Ordered\allowbreak{}Ones()) \{} (AbstractOrderingVisitor.java:110; see AbstractOrderingVisitor.java:110, 126)\par
-\textbf{Diagram:} \path{Part1/uml/png/A5.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/A5.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{A6 Discovery Event Notification} \textbf{Pattern:} Observer (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 2.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -157,7 +157,7 @@ Multicaster & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbreak{}
 \bottomrule\end{longtable}
 \textbf{Evidence:} Discovery progress (launcher/engine discovery started and finished, selector processed, issues) is pushed to registered LauncherDiscoveryListeners that the orchestrator only knows by interface.\par
 \textbf{Key code:} \texttt{listener.\allowbreak{}engine\allowbreak{}Discovery\allowbreak{}Started(unique\allowbreak{}Engine\allowbreak{}Id);} (EngineDiscoveryOrchestrator.java:194; see EngineDiscoveryOrchestrator.java:194-197)\par
-\textbf{Diagram:} \path{Part1/uml/png/A6.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/A6.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{A7 Orderer Descriptor Wrappers} \textbf{Pattern:} Adapter (Structural, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 2.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -172,7 +172,7 @@ Client & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.\allowbreak{}engine
 \bottomrule\end{longtable}
 \textbf{Evidence:} User ClassOrderer/MethodOrderer code expects the public ClassDescriptor/MethodDescriptor API; the wrappers expose internal descriptors through it so internal classes never leak to user code.\par
 \textbf{Key code:} \texttt{class Default\allowbreak{}Class\allowbreak{}Descriptor extends Abstract\allowbreak{}Annotated\allowbreak{}Descriptor\allowbreak{}Wrapper\textless{}Class\textless{}?\textgreater{}\textgreater{} implements Class\allowbreak{}Descriptor \{} (DefaultClassDescriptor.java:23; see DefaultClassDescriptor.java:23-26)\par
-\textbf{Diagram:} \path{Part1/uml/png/A7.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/A7.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \subsubsection*{Area B: engines and execution lifecycle}
 \paragraph{B1 Hierarchical Engine Execution Skeleton} \textbf{Pattern:} Template Method (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 1.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
@@ -184,7 +184,7 @@ ConcreteClass & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.\allowbreak{
 \bottomrule\end{longtable}
 \textbf{Evidence:} final HierarchicalTestEngine.execute fixes the run order (executor service, context, collector factory, HierarchicalTestExecutor); JupiterTestEngine only supplies the steps. Overlaps B2.\par
 \textbf{Key code:} \texttt{public final void execute(Execution\allowbreak{}Request request) \{} (HierarchicalTestEngine.java:53; see HierarchicalTestEngine.java:53-59, 117)\par
-\textbf{Diagram:} \path{Part1/uml/png/B1.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/B1.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{B2 Engine Collaborator Factory Methods} \textbf{Pattern:} Factory Method (Creational, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 2.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -196,7 +196,7 @@ ConcreteProduct & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.\allowbrea
 \bottomrule\end{longtable}
 \textbf{Evidence:} The template in B1 asks overridable create* methods which objects to use; JupiterTestEngine overrides them to choose a parallel/same-thread executor, its JupiterEngineExecutionContext and its throwable-collector factory. Overlaps B1.\par
 \textbf{Key code:} \texttt{protected Hierarchical\allowbreak{}Test\allowbreak{}Executor\allowbreak{}Service create\allowbreak{}Executor\allowbreak{}Service(Execution\allowbreak{}Request request) \{} (JupiterTestEngine.java:80; see JupiterTestEngine.java:80-100)\par
-\textbf{Diagram:} \path{Part1/uml/png/B2.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/B2.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{B3 Test Executor Services} \textbf{Pattern:} Strategy (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 3.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -209,7 +209,7 @@ Context & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbreak{}engi
 \bottomrule\end{longtable}
 \textbf{Evidence:} Sequential vs parallel scheduling is swappable behind HierarchicalTestExecutorService; NodeTestTask and HierarchicalTestExecutor only call submit/invokeAll.\par
 \textbf{Key code:} \texttt{task\allowbreak{}Context.\allowbreak{}executor\allowbreak{}Service().\allowbreak{}invoke\allowbreak{}All(children);} (NodeTestTask.java:180)\par
-\textbf{Diagram:} \path{Part1/uml/png/B3.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/B3.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{B4 Parallelism Configuration Strategy} \textbf{Pattern:} Strategy (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 3.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -220,7 +220,7 @@ Context & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbreak{}engi
 \bottomrule\end{longtable}
 \textbf{Evidence:} How parallelism is computed (FIXED, DYNAMIC from CPU count, CUSTOM user class) is chosen by configuration; each enum constant implements createConfiguration.\par
 \textbf{Key code:} \texttt{return get\allowbreak{}Strategy(configuration\allowbreak{}Parameters).\allowbreak{}create\allowbreak{}Configuration(configuration\allowbreak{}Parameters);} (DefaultParallelExecutionConfigurationStrategy.java:220; see DefaultParallelExecutionConfigurationStrategy.java:220-225)\par
-\textbf{Diagram:} \path{Part1/uml/png/B4.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/B4.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{B5 Intercepting Launcher Wrappers} \textbf{Pattern:} Decorator (Structural, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 2.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -232,7 +232,7 @@ Assembler & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbreak{}la
 \bottomrule\end{longtable}
 \textbf{Evidence:} The session's launcher is DelegatingLauncher \textgreater{} InterceptingLauncher \textgreater{} DefaultLauncher; each wrapper implements Launcher and forwards, InterceptingLauncher adds LauncherInterceptor around every call.\par
 \textbf{Key code:} \texttt{launcher = new Intercepting\allowbreak{}Launcher(interceptor.\allowbreak{}intercept(() -\textgreater{} launcher\allowbreak{}Factory.\allowbreak{}apply(this.\allowbreak{}store)),} (DefaultLauncherSession.java:67; see DefaultLauncherSession.java:67-70)\par
-\textbf{Diagram:} \path{Part1/uml/png/B5.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/B5.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{B6 Engine Listener Wrappers} \textbf{Pattern:} Decorator (Structural, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 3.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -245,7 +245,7 @@ Assembler & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbreak{}la
 \bottomrule\end{longtable}
 \textbf{Evidence:} EngineExecutionOrchestrator stacks independent wrappers (stack-trace pruning, outcome delaying, memory cleanup) on the engine listener; each forwards and adds one behaviour. Also part of Area C.\par
 \textbf{Key code:} \texttt{listener = new Memory\allowbreak{}Cleanup\allowbreak{}Listener(listener, test\allowbreak{}Plan);} (EngineExecutionOrchestrator.java:149; see EngineExecutionOrchestrator.java:149, 198, 253)\par
-\textbf{Diagram:} \path{Part1/uml/png/B6.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/B6.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{B7 Engine-to-Launcher Listener Adapter} \textbf{Pattern:} Adapter (Structural, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 1.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -256,7 +256,7 @@ Client (wiring) & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbre
 \bottomrule\end{longtable}
 \textbf{Evidence:} Engines report with mutable TestDescriptors; ExecutionListenerAdapter implements EngineExecutionListener and forwards to a TestExecutionListener with immutable TestIdentifiers looked up in the TestPlan. Also part of Area C.\par
 \textbf{Key code:} \texttt{this.\allowbreak{}test\allowbreak{}Execution\allowbreak{}Listener.\allowbreak{}execution\allowbreak{}Started(get\allowbreak{}Test\allowbreak{}Identifier(test\allowbreak{}Descriptor));} (ExecutionListenerAdapter.java:47)\par
-\textbf{Diagram:} \path{Part1/uml/png/B7.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/B7.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{B8 Execution Event Notification} \textbf{Pattern:} Observer (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 2.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -268,7 +268,7 @@ Subject (notify) & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbr
 \bottomrule\end{longtable}
 \textbf{Evidence:} During execution NodeTestTask pushes executionStarted/Skipped/Finished to the EngineExecutionListener from the ExecutionRequest, without knowing who listens. Also part of Area C.\par
 \textbf{Key code:} \texttt{task\allowbreak{}Context.\allowbreak{}listener().\allowbreak{}execution\allowbreak{}Started(test\allowbreak{}Descriptor);} (NodeTestTask.java:158; see NodeTestTask.java:158, 209, 224)\par
-\textbf{Diagram:} \path{Part1/uml/png/B8.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/B8.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{B9 Node Execution Tasks} \textbf{Pattern:} Command (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 1.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -279,7 +279,7 @@ Invoker & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbreak{}engi
 \bottomrule\end{longtable}
 \textbf{Evidence:} Each node's work is packaged as a TestTask object (execute + execution mode + lock) and handed to an executor service that decides when and on which thread to run it.\par
 \textbf{Key code:} \texttt{interface Test\allowbreak{}Task \{} (HierarchicalTestExecutorService.java:88; see HierarchicalTestExecutorService.java:88-114; NodeTestTask.java:46)\par
-\textbf{Diagram:} \path{Part1/uml/png/B9.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/B9.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{B10 No-op Node} \textbf{Pattern:} Null Object (Behavioral, not GoF; Woolf, Pattern Languages of Program Design 3, 1998). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 1.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -289,7 +289,7 @@ Client & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbreak{}engin
 \bottomrule\end{longtable}
 \textbf{Evidence:} A TestDescriptor that is not a Node gets a do-nothing Node from NodeUtils.asNode, so NodeTestTask never needs null checks.\par
 \textbf{Key code:} \texttt{static \textless{}C extends Engine\allowbreak{}Execution\allowbreak{}Context\textgreater{} Node\textless{}C\textgreater{} as\allowbreak{}Node(Test\allowbreak{}Descriptor test\allowbreak{}Descriptor) \{} (NodeUtils.java:25; see NodeUtils.java:25-30)\par
-\textbf{Diagram:} \path{Part1/uml/png/B10.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/B10.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \subsubsection*{Area C: listeners and reporting}
 \paragraph{C1 Test Execution Listeners} \textbf{Pattern:} Observer (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 5.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
@@ -305,7 +305,7 @@ Subject (notify) & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbr
 \bottomrule\end{longtable}
 \textbf{Evidence:} Client-side observers (IDE, summary, logging, unique-id file, JFR, stdout capture) register three ways and are notified of the same run events; notifyEach isolates each listener's failure. Different from B8 (engine side).\par
 \textbf{Key code:} \texttt{private static \textless{}T extends Test\allowbreak{}Execution\allowbreak{}Listener\textgreater{} void notify\allowbreak{}Each(List\textless{}T\textgreater{} listeners, Iteration\allowbreak{}Order iteration\allowbreak{}Order,} (CompositeTestExecutionListener.java:104; see CompositeTestExecutionListener.java:104-112 (catches each listener's Throwable))\par
-\textbf{Diagram:} \path{Part1/uml/png/C1.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/C1.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{C2 Launcher Session Notification} \textbf{Pattern:} Observer (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 1.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -315,7 +315,7 @@ Multicaster & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbreak{}
 \bottomrule\end{longtable}
 \textbf{Evidence:} LauncherSessionListeners are told when a launcher session opens and closes by DefaultLauncherSession.\par
 \textbf{Key code:} \texttt{listener.\allowbreak{}launcher\allowbreak{}Session\allowbreak{}Opened(this);} (DefaultLauncherSession.java:71; see DefaultLauncherSession.java:71, 87)\par
-\textbf{Diagram:} \path{Part1/uml/png/C2.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/C2.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{C3 Listener Notification Order} \textbf{Pattern:} Strategy (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 2.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -325,7 +325,7 @@ Context & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbreak{}laun
 \bottomrule\end{longtable}
 \textbf{Evidence:} The order in which listeners are notified is an interchangeable algorithm: IterationOrder.ORIGINAL for started events, REVERSED for finished events, used by notifyEach.\par
 \textbf{Key code:} \texttt{enum Iteration\allowbreak{}Order \{} (IterationOrder.java:18; see IterationOrder.java:18-34)\par
-\textbf{Diagram:} \path{Part1/uml/png/C3.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/C3.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{C4 Pluggable Log Sink} \textbf{Pattern:} Strategy (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 2.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -336,7 +336,7 @@ Context & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbreak{}laun
 \bottomrule\end{longtable}
 \textbf{Evidence:} LoggingListener's behaviour is fixed but where log lines go is an injected BiConsumer (java.util.logging via forJavaUtilLogging, or any sink via forBiConsumer).\par
 \textbf{Key code:} \texttt{public static Logging\allowbreak{}Listener for\allowbreak{}Java\allowbreak{}Util\allowbreak{}Logging(Level log\allowbreak{}Level) \{} (LoggingListener.java:62; see LoggingListener.java:62-88)\par
-\textbf{Diagram:} \path{Part1/uml/png/C4.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/C4.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{C5 Test Reporter Adapter} \textbf{Pattern:} Adapter (Structural, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 1.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -346,7 +346,7 @@ Adaptee & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.\allowbreak{}engin
 \bottomrule\end{longtable}
 \textbf{Evidence:} Tests call the simple TestReporter API; DefaultTestReporter implements it by calling ExtensionContext.publishReportEntry, which turns the map into a ReportEntry event.\par
 \textbf{Key code:} \texttt{public void publish\allowbreak{}Entry(Map\textless{}String, String\textgreater{} map) \{} (DefaultTestReporter.java:33; see DefaultTestReporter.java:33-34)\par
-\textbf{Diagram:} \path{Part1/uml/png/C5.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/C5.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{C6 Captured Output Stream} \textbf{Pattern:} Decorator (Structural, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 1.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -356,7 +356,7 @@ Installer /\allowbreak{} client & \texttt{org.\allowbreak{}junit.\allowbreak{}pl
 \bottomrule\end{longtable}
 \textbf{Evidence:} StreamInterceptor extends PrintStream, wraps System.out/err, copies every write into a per-thread buffer and still forwards to the original stream (super.write).\par
 \textbf{Key code:} \texttt{public void write(int b) \{} (StreamInterceptor.java:84; see StreamInterceptor.java:84-90 (copies then super.write))\par
-\textbf{Diagram:} \path{Part1/uml/png/C6.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/C6.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{C7 No-op Listeners} \textbf{Pattern:} Null Object (Behavioral, not GoF; Woolf, Pattern Languages of Program Design 3, 1998). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 2.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -366,7 +366,7 @@ Client & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbreak{}launc
 \bottomrule\end{longtable}
 \textbf{Evidence:} EngineExecutionListener.NOOP and LauncherSessionListener.NOOP stand in for 'no listener' so callers never check for null; LauncherSessionListeners returns NOOP for an empty list.\par
 \textbf{Key code:} \texttt{if (listeners.\allowbreak{}is\allowbreak{}Empty()) \{} (LauncherSessionListeners.java:36; see LauncherSessionListeners.java:36-37)\par
-\textbf{Diagram:} \path{Part1/uml/png/C7.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/C7.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \subsubsection*{Area D: Jupiter extensions and resources}
 \paragraph{D1 Temp Directory Creation} \textbf{Pattern:} Strategy (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 1.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
@@ -378,7 +378,7 @@ Context & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.\allowbreak{}engin
 \bottomrule\end{longtable}
 \textbf{Evidence:} How a @TempDir directory is created is a TempDirFactory chosen from @TempDir(factory) or the configuration; TempDirFactory.Standard is the default.\par
 \textbf{Key code:} \texttt{private Temp\allowbreak{}Dir\allowbreak{}Factory determine\allowbreak{}Temp\allowbreak{}Dir\allowbreak{}Factory(Temp\allowbreak{}Dir temp\allowbreak{}Dir) \{} (TempDirectory.java:194; see TempDirectory.java:194-199)\par
-\textbf{Diagram:} \path{Part1/uml/png/D1.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/D1.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{D2 Temp Directory Deletion} \textbf{Pattern:} Strategy (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 2.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -389,7 +389,7 @@ Selection & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.\allowbreak{}eng
 \bottomrule\end{longtable}
 \textbf{Evidence:} How a temp directory is deleted is a TempDirDeletionStrategy (IgnoreFailures or Standard) chosen from @TempDir(deletionStrategy) or the configuration and called from Cleanup.run.\par
 \textbf{Key code:} \texttt{private Supplier\textless{}Temp\allowbreak{}Dir\allowbreak{}Deletion\allowbreak{}Strategy\textgreater{} determine\allowbreak{}Deletion\allowbreak{}Strategy(Temp\allowbreak{}Dir annotation) \{} (TempDirectory.java:187; see TempDirectory.java:187, 349)\par
-\textbf{Diagram:} \path{Part1/uml/png/D2.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/D2.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{D3 Parameter Resolution} \textbf{Pattern:} Strategy (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 3.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -401,7 +401,7 @@ Context & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.\allowbreak{}engin
 \bottomrule\end{longtable}
 \textbf{Evidence:} For each parameter the context asks every ParameterResolver supportsParameter; exactly one must match and its resolveParameter supplies the value (none or several is an error).\par
 \textbf{Key code:} \texttt{List\textless{}Parameter\allowbreak{}Resolver\textgreater{} matching\allowbreak{}Resolvers = extension\allowbreak{}Registry.\allowbreak{}stream(Parameter\allowbreak{}Resolver.\allowbreak{}class)} (ParameterResolutionUtils.java:132; see ParameterResolutionUtils.java:132-155)\par
-\textbf{Diagram:} \path{Part1/uml/png/D3.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/D3.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{D4 Conditional Execution} \textbf{Pattern:} Strategy (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 1.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -412,7 +412,7 @@ Caller & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.\allowbreak{}engine
 \bottomrule\end{longtable}
 \textbf{Evidence:} Each ExecutionCondition encapsulates an enable/disable policy; ConditionEvaluator applies all of them and the first 'disabled' wins.\par
 \textbf{Key code:} \texttt{return extension\allowbreak{}Registry.\allowbreak{}stream(Execution\allowbreak{}Condition.\allowbreak{}class)} (ConditionEvaluator.java:52; see ConditionEvaluator.java:52-57)\par
-\textbf{Diagram:} \path{Part1/uml/png/D4.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/D4.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{D5 Store Close Action} \textbf{Pattern:} Strategy (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 1.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -422,7 +422,7 @@ Context & \texttt{org.\allowbreak{}junit.\allowbreak{}platform.\allowbreak{}engi
 \bottomrule\end{longtable}
 \textbf{Evidence:} The platform store does not know how to close Jupiter values, so AbstractExtensionContext injects a CloseAction (close AutoCloseable / CloseableResource values).\par
 \textbf{Key code:} \texttt{this.\allowbreak{}values\allowbreak{}Store = new Namespaced\allowbreak{}Hierarchical\allowbreak{}Store\textless{}\textgreater{}(get\allowbreak{}Parent\allowbreak{}Store(parent), create\allowbreak{}Close\allowbreak{}Action());} (AbstractExtensionContext.java:92; see AbstractExtensionContext.java:92-120)\par
-\textbf{Diagram:} \path{Part1/uml/png/D5.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/D5.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{D6 Extension Store Adapter} \textbf{Pattern:} Adapter (Structural, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 1.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -434,7 +434,7 @@ Client & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.\allowbreak{}engine
 \bottomrule\end{longtable}
 \textbf{Evidence:} Extensions use the namespace-scoped ExtensionContext.Store; NamespaceAwareStore implements it on top of the platform NamespacedHierarchicalStore, fixing the namespace and translating exceptions.\par
 \textbf{Key code:} \texttt{Supplier\textless{}@Nullable Object\textgreater{} action = () -\textgreater{} this.\allowbreak{}values\allowbreak{}Store.\allowbreak{}get(this.\allowbreak{}namespace, key);} (NamespaceAwareStore.java:44; see NamespaceAwareStore.java:44, 122-123)\par
-\textbf{Diagram:} \path{Part1/uml/png/D6.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/D6.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{D7 Lifecycle Method Adapters} \textbf{Pattern:} Adapter (Structural, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 0.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -446,7 +446,7 @@ Client & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.\allowbreak{}engine
 \bottomrule\end{longtable}
 \textbf{Evidence:} A user's @BeforeEach/@AfterEach Method is wrapped as a synthetic extension implementing BeforeEachMethodAdapter/AfterEachMethodAdapter so it runs through the extension ordering. Adapters are lambdas (no named class).\par
 \textbf{Key code:} \texttt{registrar.\allowbreak{}register\allowbreak{}Synthetic\allowbreak{}Extension(extension\allowbreak{}Synthesizer.\allowbreak{}apply(method), method);} (ClassBasedTestDescriptor.java:529; see ClassBasedTestDescriptor.java:529-535)\par
-\textbf{Diagram:} \path{Part1/uml/png/D7.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/D7.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{D8 Test Outcome Watchers} \textbf{Pattern:} Observer (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 1.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -457,7 +457,7 @@ Subject (trigger) & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.\allowbr
 \bottomrule\end{longtable}
 \textbf{Evidence:} TestWatcher extensions are told each test's outcome and cannot change it; their exceptions are only logged.\par
 \textbf{Key code:} \texttt{List\textless{}Test\allowbreak{}Watcher\textgreater{} watchers = context.\allowbreak{}get\allowbreak{}Extension\allowbreak{}Registry().\allowbreak{}get\allowbreak{}Extensions(Test\allowbreak{}Watcher.\allowbreak{}class);} (MethodBasedTestDescriptor.java:169; see MethodBasedTestDescriptor.java:169-187)\par
-\textbf{Diagram:} \path{Part1/uml/png/D8.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/D8.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{D9 Invocation Interceptor Chain} \textbf{Pattern:} Chain of Responsibility (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 1.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -469,7 +469,7 @@ Client & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.\allowbreak{}engine
 \bottomrule\end{longtable}
 \textbf{Evidence:} Every test/lifecycle/constructor call passes through a chain of InvocationInterceptors built back to front; each handler can proceed(), skip() or wrap the rest of the chain (interceptor-chain variant).\par
 \textbf{Key code:} \texttt{List\allowbreak{}Iterator\textless{}Invocation\allowbreak{}Interceptor\textgreater{} iterator = interceptors.\allowbreak{}list\allowbreak{}Iterator(interceptors.\allowbreak{}size());} (InvocationInterceptorChain.java:56; see InvocationInterceptorChain.java:56-59)\par
-\textbf{Diagram:} \path{Part1/uml/png/D9.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/D9.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{D10 Timeout Invocation Wrappers} \textbf{Pattern:} Decorator (Structural, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 3.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -481,7 +481,7 @@ Client & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.\allowbreak{}engine
 \bottomrule\end{longtable}
 \textbf{Evidence:} TimeoutExtension.decorate wraps the Invocation in a timeout-aware Invocation that keeps the original as delegate and adds timing around delegate.proceed(); ValidatingInvocation adds a call-once check.\par
 \textbf{Key code:} \texttt{private final Invocation\textless{}T\textgreater{} delegate;} (SameThreadTimeoutInvocation.java:28; see SameThreadTimeoutInvocation.java:28, 51)\par
-\textbf{Diagram:} \path{Part1/uml/png/D10.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/D10.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 \paragraph{D11 Packaged Reflective Calls} \textbf{Pattern:} Command (Behavioral, GoF). \textbf{Origin:} JUnit framework code (not student-added). \textbf{Concrete participant classes:} 2.\par
 \begin{longtable}{@{}p{0.19\linewidth}p{0.41\linewidth}p{0.33\linewidth}@{}}\toprule
 Role & Class / interface / function & File and lines\\\midrule\endhead
@@ -492,7 +492,7 @@ Client & \texttt{org.\allowbreak{}junit.\allowbreak{}jupiter.\allowbreak{}engine
 \bottomrule\end{longtable}
 \textbf{Evidence:} A resolved reflective call (method or constructor + target + arguments) is packaged as an Invocation object so interceptors can run it later, on another thread, or skip it.\par
 \textbf{Key code:} \texttt{Method\allowbreak{}Invocation\textless{}T\textgreater{} invocation = new Method\allowbreak{}Invocation\textless{}\textgreater{}(method, optional\allowbreak{}Target, arguments);} (InterceptingExecutableInvoker.java:97; see InterceptingExecutableInvoker.java:97; MethodInvocation.java:59-61)\par
-\textbf{Diagram:} \path{Part1/uml/png/D11.png} (source in \path{Part1/uml/}, Appendix~\ref{app:uml}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
+\textbf{Diagram:} \path{Part1/uml/png/D11.png} (source in \path{Part1/uml/}). \textbf{Verification:} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in \path{Part1/evidence/verification.csv}, decisions in \path{Part1/notes.md}.\par
 
 \begin{longtable}{@{}p{0.06\linewidth}p{0.11\linewidth}p{0.79\linewidth}@{}}
 \caption{Rejected and uncertain candidates (reasons from \protect\path{Part1/notes.md})}\label{tab:rejected}\\\toprule
@@ -765,44 +765,9 @@ B16/
 \begin{figure}[H]\centering\includegraphics[width=\linewidth]{screenshots/5_Part3.jpg}\caption{GitHub: \texttt{B16/Part3/}}\end{figure}
 
 \appendix
-\section{UML diagrams}\label{app:uml}
-Baseline diagrams for all 35 instances (\path{Part1/uml/}, PlantUML sources and PNGs; 98 of 98 implements/extends arrows checked against the code), followed by the diagrams that changed in Part~2 (\path{Part2/uml/}; new participants in green).
+\section{UML diagrams changed in Part 2}\label{app:uml}
+The diagrams that changed in Part~2 (\path{Part2/uml/}; new participants in green). Baseline diagrams for all 35 instances are not repeated here: they are in \path{Part1/uml/} (PlantUML sources and PNGs; 98 of 98 implements/extends arrows checked against the code), and each instance record above gives its path.
 
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/A1.png}\caption{A1 Test Descriptor Tree (Composite), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/A2.png}\caption{A2 Composed Discovery Filter (Composite), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/A3.png}\caption{A3 Post-Discovery Filter Policies (Strategy), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/A4.png}\caption{A4 Jupiter Descriptor Skeletons (Template Method), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/A5.png}\caption{A5 Child Ordering Skeleton (Template Method), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/A6.png}\caption{A6 Discovery Event Notification (Observer), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/A7.png}\caption{A7 Orderer Descriptor Wrappers (Adapter), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/B1.png}\caption{B1 Hierarchical Engine Execution Skeleton (Template Method), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/B2.png}\caption{B2 Engine Collaborator Factory Methods (Factory Method), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/B3.png}\caption{B3 Test Executor Services (Strategy), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/B4.png}\caption{B4 Parallelism Configuration Strategy (Strategy), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/B5.png}\caption{B5 Intercepting Launcher Wrappers (Decorator), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/B6.png}\caption{B6 Engine Listener Wrappers (Decorator), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/B7.png}\caption{B7 Engine-to-Launcher Listener Adapter (Adapter), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/B8.png}\caption{B8 Execution Event Notification (Observer), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/B9.png}\caption{B9 Node Execution Tasks (Command), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/B10.png}\caption{B10 No-op Node (Null Object), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/C1.png}\caption{C1 Test Execution Listeners (Observer), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/C2.png}\caption{C2 Launcher Session Notification (Observer), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/C3.png}\caption{C3 Listener Notification Order (Strategy), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/C4.png}\caption{C4 Pluggable Log Sink (Strategy), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/C5.png}\caption{C5 Test Reporter Adapter (Adapter), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/C6.png}\caption{C6 Captured Output Stream (Decorator), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/C7.png}\caption{C7 No-op Listeners (Null Object), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/D1.png}\caption{D1 Temp Directory Creation (Strategy), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/D2.png}\caption{D2 Temp Directory Deletion (Strategy), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/D3.png}\caption{D3 Parameter Resolution (Strategy), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/D4.png}\caption{D4 Conditional Execution (Strategy), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/D5.png}\caption{D5 Store Close Action (Strategy), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/D6.png}\caption{D6 Extension Store Adapter (Adapter), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/D7.png}\caption{D7 Lifecycle Method Adapters (Adapter), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/D8.png}\caption{D8 Test Outcome Watchers (Observer), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/D9.png}\caption{D9 Invocation Interceptor Chain (Chain of Responsibility), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/D10.png}\caption{D10 Timeout Invocation Wrappers (Decorator), baseline}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=0.92\linewidth,height=0.4\textheight,keepaspectratio]{Part1/uml/png/D11.png}\caption{D11 Packaged Reflective Calls (Command), baseline}\end{figure}
 \begin{figure}[H]\centering\includegraphics[width=0.95\linewidth,height=0.42\textheight,keepaspectratio]{Part2/uml/png/A2.png}\caption{A2 after Change3 (extended)}\end{figure}
 \begin{figure}[H]\centering\includegraphics[width=0.95\linewidth,height=0.42\textheight,keepaspectratio]{Part2/uml/png/A3.png}\caption{A3 after Change3 (extended)}\end{figure}
 \begin{figure}[H]\centering\includegraphics[width=0.95\linewidth,height=0.42\textheight,keepaspectratio]{Part2/uml/png/C1.png}\caption{C1 after Change1 (extended)}\end{figure}

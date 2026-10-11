@@ -55,7 +55,7 @@ Pattern type & Instance names & Instances & Concrete classes\\\midrule\endhead
 \bottomrule\end{longtable}
 
 \subsection{One record for each pattern instance}
-Each record gives the pattern, the purpose (as evidence) and every participant with its file and line range. Paths are shortened to module/.../file; the full paths are in \path{data/patterns.csv}. All instances are JUnit framework code. Diagrams are in Appendix~\ref{app:uml}.
+Each record gives the pattern, the purpose (as evidence) and every participant with its file and line range. Paths are shortened to module/.../file; the full paths are in \path{data/patterns.csv}. All instances are JUnit framework code. Each record names its diagram; PlantUML sources and PNGs for all 35 instances are in \path{Part1/uml/}.
 
 %%RECORDS%%
 
@@ -228,8 +228,8 @@ B16/
 \begin{figure}[H]\centering\includegraphics[width=\linewidth]{screenshots/5_Part3.jpg}\caption{GitHub: \texttt{B16/Part3/}}\end{figure}
 
 \appendix
-\section{UML diagrams}\label{app:uml}
-Baseline diagrams for all 35 instances (\path{Part1/uml/}, PlantUML sources and PNGs; 98 of 98 implements/extends arrows checked against the code), followed by the diagrams that changed in Part~2 (\path{Part2/uml/}; new participants in green).
+\section{UML diagrams changed in Part 2}\label{app:uml}
+The diagrams that changed in Part~2 (\path{Part2/uml/}; new participants in green). Baseline diagrams for all 35 instances are not repeated here: they are in \path{Part1/uml/} (PlantUML sources and PNGs; 98 of 98 implements/extends arrows checked against the code), and each instance record above gives its path.
 
 %%UML%%
 

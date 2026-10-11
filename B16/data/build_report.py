@@ -107,7 +107,7 @@ def records():
         out.append(f"\\textbf{{Evidence:}} {esc(i['intent'])}\\par")
         out.append(f"\\textbf{{Key code:}} {proof_tex(key[i['id']])}\\par")
         out.append(f"\\textbf{{Diagram:}} {path('Part1/uml/png/' + i['id'] + '.png')} (source in "
-                   f"{path('Part1/uml/')}, Appendix~\\ref{{app:uml}}). "
+                   f"{path('Part1/uml/')}). "
                    f"\\textbf{{Verification:}} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in "
                    f"{path('Part1/evidence/verification.csv')}, decisions in {path('Part1/notes.md')}.\\par")
     return "\n".join(out)
@@ -200,10 +200,6 @@ def verification_counts():
 
 def uml_appendix():
     out = []
-    for i in INSTANCES:
-        out.append(f"\\begin{{figure}}[H]\\centering\\includegraphics[width=0.92\\linewidth,height=0.4\\textheight,"
-                   f"keepaspectratio]{{Part1/uml/png/{i['id']}.png}}\\caption{{{esc(i['id'])} {esc(i['name'])} "
-                   f"({esc(i['pattern'])}), baseline}}\\end{{figure}}")
     for name, cap in [("A2", "A2 after Change3 (extended)"), ("A3", "A3 after Change3 (extended)"),
                       ("C1", "C1 after Change1 (extended)"), ("D3", "D3 after Change2 (extended)"),
                       ("N1", "N1 Managed Resource Factory (Strategy, newly introduced by Change2)"),
