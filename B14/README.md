@@ -1,7 +1,7 @@
 # 23CSE455 Design Patterns Case Study: Team B14
 
 **Case study:** Design Pattern Identification and Evolution in a Next.js-Based Digital News and Publishing Application
-**Application:** Next.js Blog CMS (faculty approval: [name/date])
+**Application:** Next.js Blog CMS 
 
 ## Students
 | Roll number | Name | Batch |
