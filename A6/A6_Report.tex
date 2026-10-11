@@ -587,7 +587,8 @@ about 450 more NLOC and more, smaller functions; some use cases (\texttt{CancelB
 now enforce ownership and supply rules. More or fewer LOC alone does not prove a better design; the evidence for the improvement is
 that two baseline defects are now caught by tests and that the old fare behaviour is preserved by unchanged tests. Remaining limitations:
 \texttt{UpdateBookingStatus} still does not check that the caller is the booking's driver; the pre-booking estimate cannot include the
-low-supply surcharge.
+low-supply surcharge; cancellation is still read-then-update rather than one atomic conditional update, and acceptance does not re-check
+\texttt{activePayment} -- the last two were pointed out by the ChatGPT reviews in Section~\ref{sec:llm} and are left as future work.
 
 %=====================================================================
 \section{Part 3 Cross-language comparison}
@@ -650,19 +651,42 @@ subscription never keeps a disconnected observer alive -- a concern garbage-coll
 
 %=====================================================================
 \section{LLM records and human verification}\label{sec:llm}
-\textbf{Run and model:} two kinds of runs. (a) Dilip Kumar Reddy used Claude Opus 5.5 in the Claude Code desktop app (paid tier, not free) on 2026-10-11 for
-the application study and first pattern list; the exact prompt and raw reply are in \texttt{prompts/Dilip\_Kumar\_Reddy\_claude\_*}. (b) Each member runs two
-prompts on a free public model (ChatGPT or Gemini, no login needed); prompt files embed the exact source excerpts given to the model.
-Only runs that were actually performed are listed; \texttt{data/llm.csv} is regenerated as outputs arrive.
+\textbf{Run and model:} 10 real runs on 2026-10-11. (a) Dilip Kumar Reddy's prompt to Claude Opus 5.5 in the Claude Code desktop app (paid tier,
+not a free tool) for the application study and first pattern list (\texttt{prompts/Dilip\_Kumar\_Reddy\_claude\_*}). (b) Nine prompts on
+\textbf{ChatGPT, free tier, logged out} (the interface shows no model name). Members were unavailable, so with the team lead's approval each
+prompt file was pasted unchanged into a new chat from his computer, with the browser driven by Claude Code; the member named on a file is the
+owner of that topic, not the person who typed it. Prompts embed the exact source excerpts, specifications or CSVs the model received.
 
-\textbf{Claims and evaluation:}\\
-\begin{tabular}{@{}P{0.17\linewidth}P{0.2\linewidth}P{0.2\linewidth}P{0.36\linewidth}@{}}\toprule Part & Model and date & Output & Evaluation\\\midrule
-Pattern discovery (application study) & Claude Opus 5.5 (claude-opus-5-5) in Claude Code desktop app, paid tier, 2026-10-11 & \texttt{prompts/\allowbreak{}Dilip\_\allowbreak{}Kumar\_\allowbreak{}Reddy\_\allowbreak{}claude\_\allowbreak{}output\_\allowbreak{}01.\allowbreak{}md} & Partially correct: Repository, DI, Singleton, Adapter (Socket.IO, Stripe), Observer, Chain of Responsibility, Data Mapper and Layered Architecture were confirmed; Twilio/Cloudinary adapters are unused or out of scope; Gateway and catchAsync Decorator were missed; ON\_TRIP proposal was replaced by SUSPENDED. \\
-\bottomrule\end{tabular}
+\textbf{Inputs and outputs:} prompt, input, raw output and verification paths are in \texttt{data/llm.csv}; inputs come from the baseline
+commit c8766f4 (\texttt{Part1/code}) or from our own specifications and datasets. Outputs were captured from the rendered page and converted
+to Markdown without editing the content.
 
-\textbf{Generated code:} the TypeScript changes and the Part 3 snippets were written with AI assistance in the same Claude Code session and are
-accepted only through the evidence in this report: 41 application tests, 22 fixtures per language set, \texttt{tsc} with no new errors and
-\texttt{-Wall -Wextra -Wpedantic} with no warnings. Each member reviews their part and signs \texttt{HUMAN\_VERIFICATION.md}.
+\textbf{Claims and evaluation:}
+\begin{longtable}{@{}P{0.17\linewidth}P{0.14\linewidth}P{0.12\linewidth}P{0.5\linewidth}@{}}\toprule Part & Topic owner & Model & Evaluation (details in the verification file)\\\midrule\endhead
+Pattern discovery (application study) & Dilip Kumar Reddy & Claude Opus 5.5 & Partially correct: Repository, DI, Singleton, Adapter (Socket.IO, Stripe), Observer, Chain of Responsibility, Data Mapper and Layered Architecture were confirmed; Twilio/Cloudinary adapters are unused or out of scope; Gateway and catchAsync Decorator were missed; ON\_TRIP proposal was replaced by SUSPENDED. \\
+Pattern discovery & Dilip Kumar Reddy & ChatGPT free & Partial: agrees on Repository, DI, Layered Architecture, Adapter, middleware chain and on all 6 rejected candidates; disputes our Observer, catchAsync Decorator and module Singleton; Data Mapper and Gateway code was not in the excerpt. \\
+Evolution CH01 (new driver status) & Sai Sameer & ChatGPT free & Correct defect analysis (5/5 baseline defects confirmed); partial design: its 'State' is a transition table, not state objects; it flags an activePayment check and a suspend/accept race that remain open in our CH01. \\
+Cross-language analysis (Observer) & Sai Sameer & ChatGPT free & Partial: all 4 generated implementations compile and pass O1-O6; verbosity ranking wrong for its own Java/C++; its C++ hub keeps observers alive with shared\_ptr (ours uses weak\_ptr). \\
+Evolution CH02 (ride cancellation) & M Kumar & ChatGPT free & Partial: accurate defects including the non-atomic read-then-update, which is still present in our CH02; recommends Strategy (matches ours) but advises against State (we chose State); one formula glitch and one unsafe driverId! sample. \\
+Cross-language analysis (State) & M Kumar & ChatGPT free & Correct: all 4 generated implementations pass T1-T8; size ranking matches its code; 'same complexity' claim only partly true (max CC 2-4 vs 6). \\
+Evolution CH03 (ride types and dynamic pricing) & K Harish & ChatGPT free & Partial: smells and Strategy design match our CH03; rule pipeline instead of our Decorator (equivalent x1.5 stacking); km-validation 'defect' already handled by Zod schema; hourly billing not rounded to started hours. \\
+Cross-language analysis (Strategy) & K Harish & ChatGPT free & Partial: all 4 generated implementations pass S1-S8; comparison table wrongly lists inheritance for its JS; size ranking holds only when tests are inside the files. \\
+Pattern discovery (dataset audit) & S Leela Shankar & ChatGPT free & Correct: counts and participant roles confirmed with no errors; its caveats (Observer combined roles, framework CoR, function Decorator) are already recorded in the dataset. \\
+Cross-language analysis (metrics) & S Leela Shankar & ChatGPT free & Correct: reproduces every number and gives sound threats to validity; two minor slips (CC remark; says raw timings are missing although they are in Part3/evidence). \\
+\bottomrule\end{longtable}
+
+\textbf{What the evaluation showed:} 3 runs correct, 7 partially correct, none fully incorrect. All 12 programs that ChatGPT generated for the
+cross-language prompts compiled and passed every fixture (\texttt{prompts/*\_coderun\_02.txt}), but its explanations made factual slips about its
+own code (a JavaScript ``inheritance'' entry, size rankings). In pattern discovery it agreed with our Repository, DI, Layered, Adapter and
+middleware-chain findings and with all six rejected candidates, but disputed three of our classifications (Observer with remote observers,
+the function-wrapper Decorator \texttt{catchAsync}, the module-level Singleton); we keep them with their caveats stated in the records. For the
+change requests it proposed the same Strategy designs, preferred a transition table or a single eligibility check where we used State, and
+found two weaknesses that remain in our implementation (non-atomic cancellation, no \texttt{activePayment} check on acceptance). A model
+statement was never accepted without code or test evidence.
+
+\textbf{Generated code in our deliverables:} the TypeScript changes and the Part 3 snippets were written with AI assistance in the Claude Code session
+and are accepted only through the evidence in this report: 41 application tests, 22 fixtures per language set, \texttt{tsc} with no new errors and
+\texttt{-Wall -Wextra -Wpedantic} with no warnings. Each topic owner reviews their part and signs \texttt{HUMAN\_VERIFICATION.md}.
 
 %=====================================================================
 \section{Findings, contributions and references}
@@ -672,6 +696,8 @@ both status lifecycles had no behavioural pattern, and two defects followed from
 jump a rejected driver to approved). (3) The four requirements introduced two State, two Strategy and one Decorator instance and extended
 the notification Adapter/Observer, ending at 12 types and 21 instances with no removals. (4) Across languages the pattern structure stays the
 same; what changes is how roles are declared (nominal vs structural), how events are dispatched, and whether ownership must be explicit.
+(5) The LLM was useful as a reviewer -- it confirmed most findings and exposed two remaining weaknesses -- but 7 of 10 answers needed correction,
+so its statements served as hypotheses to verify, not as evidence.
 Limitations: no live end-to-end run against external services; dependency drift; no upstream license; client-side observers out of scope.
 
 \textbf{Contributions} (\texttt{data/contributions.csv}):\\

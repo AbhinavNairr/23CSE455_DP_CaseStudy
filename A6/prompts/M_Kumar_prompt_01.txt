@@ -1,15 +1,14 @@
-Context: Sarathi is an open-source Node.js/Express/TypeScript ride-sharing (driver-hire) backend (https://github.com/AkhilMM2000/sarathi-backend, commit c8766f4). It uses MongoDB/Mongoose, tsyringe dependency injection, Socket.IO, Upstash Redis, Stripe and the Google Distance Matrix API. Line numbers are shown at the left of every source line.
-New requirement (Agile change CH02 - ride cancellation): both the rider and the assigned driver can cancel a ride. Only PENDING or CONFIRMED rides can be cancelled; COMPLETED, CANCELLED, REJECTED or EXPIRED rides must be refused. A rider cancelling a CONFIRMED ride after 9:00 PM IST on the day before the ride pays a late cancellation fee of 10% of the estimated fare (minimum Rs 50); all other rider cancellations are free. A driver cancellation is free for the rider and the rider must be notified. Only the rider or driver of that booking may cancel it.
-Questions: (1) Which code smells or defects in the current cancellation and status-update code make this change risky? (2) Which design pattern(s) would you introduce and why? Name every participant. (3) Which existing patterns are preserved, modified, extended, replaced or removed? (4) Show the TypeScript changes needed in the files below.
+Context: Sarathi is an open-source Node.js/Express/TypeScript ride-sharing backend (github.com/AkhilMM2000/sarathi-backend, commit c8766f4) using MongoDB/Mongoose, tsyringe DI, Socket.IO, Redis, Stripe and the Google Distance Matrix API. Source lines are numbered on the left.
 
------ FILE: Part1/code/src/domain/models/Booking.ts (lines 1-47) -----
-   1 import { Types } from "mongoose";
-   2 
-   3 export enum paymentStatus {
-   4   PENDING = "PENDING",
-   5     COMPLETED = "COMPLETED",
-   6     FAILED = "FAILED",
-   7     }
+Change request CH02 - ride cancellation: the rider or the assigned driver can cancel a ride. Only PENDING or CONFIRMED rides can be cancelled. A rider cancelling a CONFIRMED ride after 9:00 PM IST on the day before the ride pays 10% of the estimated fare (minimum Rs 50); otherwise free. Driver cancellation is free and the rider is notified. Only the booking's own rider or driver may cancel it.
+
+Answer in this order, concisely:
+1. Code smells or defects in the current code that make this change risky (cite file:line).
+2. The design pattern(s) you would introduce, with every participant role mapped to a class name.
+3. Effect on the patterns already in this code: preserved / modified / extended / replaced / removed, with a reason.
+4. The key TypeScript changes (only the new/changed parts).
+
+--- src/domain/models/Booking.ts (lines 8-15) ---
    8 export enum BookingStatus {
    9   PENDING = "PENDING", 
   10   CONFIRMED = "CONFIRMED",
@@ -18,50 +17,8 @@ Questions: (1) Which code smells or defects in the current cancellation and stat
   13   REJECTED= "REJECTED",
   14   EXPIRED = "EXPIRED",
   15     }
-  16 export enum BookingType {
-  17   ONE_WAY = "ONE_RIDE",
-  18     ROUND_TRIP = "RANGE_OF_DATES",  
-  19         }
-  20 export interface Booking {
-  21     _id?: Types.ObjectId | string;
-  22     id?: string;
-  23     userId:Types.ObjectId;
-  24     driverId?: Types.ObjectId;
-  25     fromLocation?: string;
-  26     toLocation?: string; 
-  27     startDate: Date;
-  28     endDate?: Date;
-  29     estimatedKm?: number;
-  30     finalKm?: number;
-  31     estimatedFare?: number;
-  32     finalFare?: number;
-  33     bookingType:BookingType; 
-  34     status?: BookingStatus; 
-  35     paymentStatus?: paymentStatus; 
-  36     paymentMode:'stripe'
-  37    reason?: string;
-  38 paymentIntentId?:string;
-  39     driver_fee?: number;
-  40     platform_fee?: number;
-  41     walletDeduction?: number;
-  42     fromLat?: number;
-  43     fromLng?: number;
-  44     userAcknowledged?: boolean;
-  45     createdAt?: Date;   
-  46     updatedAt?: Date;
-  47   }
 
------ FILE: Part1/code/src/application/use_cases/User/CancelBooking.ts (lines 1-56) -----
-   1 import { inject, injectable } from "tsyringe";
-   2 import { IBookingRepository } from "../../../domain/repositories/IBookingrepository"; 
-   3 import { BookingStatus } from "../../../domain/models/Booking";
-   4 import { AuthError } from "../../../domain/errors/Autherror";
-   5 import { INotificationService } from "../../services/NotificationService";
-   6 import { TOKENS } from "../../../constants/Tokens";
-   7 import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
-   8 import { HTTP_STATUS_CODES } from "../../../constants/HttpStatusCode";
-   9 import { ICancelBookingUseCase } from "./interfaces/ICancelBookingUseCase";
-  10 
+--- src/application/use_cases/User/CancelBooking.ts (lines 11-56) ---
   11 interface CancelBookingInput {
   12   bookingId: string;
   13   status: BookingStatus;
@@ -109,32 +66,7 @@ Questions: (1) Which code smells or defects in the current cancellation and stat
   55   }
   56 }
 
------ FILE: Part1/code/src/application/use_cases/Driver/UpdateBookingstatus.ts (lines 1-70) -----
-   1 import { inject, injectable } from "tsyringe";
-   2 import { IBookingRepository } from "../../../domain/repositories/IBookingrepository"; 
-   3 import { BookingStatus } from "../../../domain/models/Booking";
-   4 import { AuthError } from "../../../domain/errors/Autherror";
-   5 import { INotificationService } from "../../services/NotificationService";
-   6 import { TOKENS } from "../../../constants/Tokens";
-   7 import { HTTP_STATUS_CODES } from "../../../constants/HttpStatusCode";
-   8 import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
-   9 import { IUpdateBookingStatusUseCase } from "./interfaces/IUpdateBookingStatusUseCase";
-  10 
-  11 
-  12 interface UpdateBookingStatusInput {
-  13   bookingId: string;
-  14   status: BookingStatus
-  15   reason?: string;
-  16   finalKm?: number;
-  17 }
-  18 @injectable()
-  19 export class UpdateBookingStatus implements IUpdateBookingStatusUseCase {
-  20   constructor(  @inject(TOKENS.IBOOKING_REPO)
-  21   private _bookingRepo: IBookingRepository,
-  22  @inject(TOKENS.NOTIFICATION_SERVICE)
-  23     private _notificationService: INotificationService
-  24 ) {}
-  25 
+--- src/application/use_cases/Driver/UpdateBookingstatus.ts (lines 26-67) ---
   26   async execute(input: UpdateBookingStatusInput): Promise<void> {
   27     const { bookingId, status, reason, finalKm } = input;
   28     let finalFare: number | undefined = undefined;
@@ -177,79 +109,8 @@ Questions: (1) Which code smells or defects in the current cancellation and stat
   65 
   66     
   67   }
-  68  
-  69 
-  70 }
 
------ FILE: Part1/code/src/application/use_cases/Driver/AcceptBooking.ts (lines 1-54) -----
-   1 import { inject, injectable } from "tsyringe";
-   2 import { IBookingRepository } from "../../../domain/repositories/IBookingrepository";
-   3 import { BookingStatus, Booking } from "../../../domain/models/Booking";
-   4 import { AuthError } from "../../../domain/errors/Autherror";
-   5 import { INotificationService } from "../../services/NotificationService";
-   6 import { TOKENS } from "../../../constants/Tokens";
-   7 import { HTTP_STATUS_CODES } from "../../../constants/HttpStatusCode";
-   8 import BookingModel from "../../../infrastructure/database/modals/Bookingschema";
-   9 import { Types } from "mongoose";
-  10 import { IAcceptBookingUseCase, AcceptBookingInput } from "./interfaces/IAcceptBookingUseCase";
-  11 import { PopulatedDriver } from "../../../infrastructure/database/interfaces/PopulatedBooking";
-  12 
-  13 @injectable()
-  14 export class AcceptBooking implements IAcceptBookingUseCase {
-  15   constructor(
-  16     @inject(TOKENS.IBOOKING_REPO) private _bookingRepo: IBookingRepository,
-  17     @inject(TOKENS.NOTIFICATION_SERVICE) private _notificationService: INotificationService
-  18   ) {}
-  19 
-  20   async execute(data: AcceptBookingInput): Promise<Booking> {
-  21     const { bookingId, driverId } = data;
-  22 
-  23     // Atomic update: only updates status to CONFIRMED if status is currently PENDING
-  24     const updatedBooking = await BookingModel.findOneAndUpdate(
-  25       { _id: new Types.ObjectId(bookingId), status: BookingStatus.PENDING },
-  26       { status: BookingStatus.CONFIRMED, driverId: new Types.ObjectId(driverId) },
-  27       { new: true }
-  28     ).populate("driverId", "name profileImage mobile");
-  29 
-  30     // If updatedBooking is null, it was either already accepted or expired
-  31     if (!updatedBooking) {
-  32       throw new AuthError("This booking request is no longer available.", HTTP_STATUS_CODES.BAD_REQUEST);
-  33     }
-  34 
-  35     const driverObj = updatedBooking.driverId as unknown as PopulatedDriver;
-  36 
-  37     // Notify user via Socket.IO
-  38     await this._notificationService.sendBookingConfirmation(updatedBooking.userId.toString(), {
-  39       bookingId: (updatedBooking._id as Types.ObjectId).toString(),
-  40       status: BookingStatus.CONFIRMED,
-  41       driver: driverObj ? {
-  42         _id: driverObj._id.toString(),
-  43         name: driverObj.name,
-  44         mobile: driverObj.mobile,
-  45         profileImage: driverObj.profileImage || "N/A"
-  46       } : undefined
-  47     });
-  48 
-  49     // Notify other online drivers to dismiss their popups
-  50     this._notificationService.bookingAssignedNotification((updatedBooking._id as Types.ObjectId).toString(), driverId);
-  51 
-  52     return updatedBooking.toObject() as Booking;
-  53   }
-  54 }
-
------ FILE: Part1/code/src/infrastructure/services/CronScheduler.ts (lines 1-51) -----
-   1 import { container } from "tsyringe";
-   2 import BookingModel from "../database/modals/Bookingschema";
-   3 import { BookingStatus } from "../../domain/models/Booking";
-   4 import { INotificationService } from "../../application/services/NotificationService";
-   5 import { TOKENS } from "../../constants/Tokens";
-   6 import { Types } from "mongoose";
-   7 
-   8 export class CronScheduler {
-   9   static start() {
-  10     console.log("[CronScheduler] Booking expiration scheduler started.");
-  11     
-  12     // Check every 30 seconds to catch expired bookings promptly
+--- src/infrastructure/services/CronScheduler.ts (lines 13-43) ---
   13     setInterval(async () => {
   14       try {
   15         const limitMinutes = parseInt(process.env.BOOKING_EXPIRATION_LIMIT_MINUTES || "3", 10);
@@ -281,16 +142,8 @@ Questions: (1) Which code smells or defects in the current cancellation and stat
   41           // 2. Dismiss request popup for all online drivers
   42           notificationService.bookingAssignedNotification((booking._id as Types.ObjectId).toString());
   43         }
-  44 
-  45         console.log(`[CronScheduler] Expired ${expiredBookings.length} pending booking(s).`);
-  46       } catch (error) {
-  47         console.error("[CronScheduler] Error running expiration cron:", error);
-  48       }
-  49     }, 30 * 1000);
-  50   }
-  51 }
 
------ FILE: Part1/code/src/presentation/controllers/BookingController.ts (lines 193-204) -----
+--- src/presentation/controllers/BookingController.ts (lines 193-204) ---
  193   cancelBooking = catchAsync(async (req: Request, res: Response) => {
  194     // 1. DTO Validation
  195     const validatedData = ZodHelper.validate(CancelBookingSchema, req.body);
@@ -303,22 +156,3 @@ Questions: (1) Which code smells or defects in the current cancellation and stat
  202 
  203     res.status(HTTP_STATUS_CODES.OK).json({ message: "Booking cancelled successfully" });
  204   });
-
------ FILE: Part1/code/src/application/services/NotificationService.ts (lines 1-17) -----
-   1 
-   2 export interface INotificationService {
-   3     sendBookingNotification(driverId: string, data: any): void;
-   4     broadcastBookingNotification(driverIds: string[], data: any): void;
-   5     cancelBookingNotification(driverId:string,data:any):void
-   6     paymentNotification(driverId:string,data:any):void
-   7     bookingAssignedNotification(bookingId: string, driverId?: string): void;
-   8     sendBookingConfirmation(userId: string, data: any): void;
-   9     rejectBookingNotification(userId:string,data:any):void;
-  10     adminChangeDriverStatusNotification(
-  11         driverId: string, 
-  12        data: any
-  13     ): void;
-  14 
-  15 
-  16   }
-  17   

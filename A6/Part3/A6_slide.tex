@@ -144,8 +144,9 @@ All 12 pass: Strategy 8/8, State 8/8, Observer 6/6. Time = median of 5 full test
 
 \begin{frame}{LLM use and limitations}
 \begin{itemize}
-\item LLM records kept only for real runs: prompt, input, raw output, verification (\texttt{prompts/}, \texttt{data/llm.csv})
-\item First Claude pass: partially correct -- missed Gateway and \texttt{catchAsync} Decorator, over-counted unused adapters
+\item 10 real LLM runs (1 Claude Code, 9 ChatGPT free tier): prompt, input, raw output, verification (\texttt{prompts/}, \texttt{data/llm.csv})
+\item 3 correct, 7 partial; all 12 ChatGPT-generated programs passed the fixtures, but its explanations had slips
+\item ChatGPT disputed our Observer / \texttt{catchAsync} Decorator / module Singleton and found 2 open gaps (non-atomic cancel, \texttt{activePayment})
 \item Every pattern accepted only from traced code + tests, never from a name or an LLM claim
 \item Limitations: no live run against MongoDB/Redis/Stripe/Google; dependency drift (7 pre-existing \texttt{tsc} errors); no upstream license
 \end{itemize}

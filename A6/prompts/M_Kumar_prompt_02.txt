@@ -1,5 +1,6 @@
-Implement the following small problem with the State pattern in Java, Python, JavaScript and C++, with identical behaviour in all four languages, then compare the four implementations (participant structure, interfaces vs duck typing, inheritance vs composition, memory/ownership, static vs dynamic typing, lines of code and complexity).
+Implement this problem with the State pattern in Java, Python, JavaScript and C++ with identical behaviour (all fixtures must pass). Then compare the four versions in a short table and 5-6 bullet points: participant structure, nominal interfaces vs duck typing, inheritance vs composition, memory/ownership, and expected differences in lines of code and complexity.
 
+--- Part3/test-cases/state_spec.md ---
 # State - Trip Lifecycle
 
 Source instance: **Trip Lifecycle and Cancellation** (introduced in CH02, `Part2/code/src/domain/booking/`).

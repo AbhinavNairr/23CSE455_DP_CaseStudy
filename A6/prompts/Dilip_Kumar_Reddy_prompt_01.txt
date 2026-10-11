@@ -1,8 +1,9 @@
-Context: Sarathi is an open-source Node.js/Express/TypeScript ride-sharing (driver-hire) backend (https://github.com/AkhilMM2000/sarathi-backend, commit c8766f4). It uses MongoDB/Mongoose, tsyringe dependency injection, Socket.IO, Upstash Redis, Stripe and the Google Distance Matrix API. Line numbers are shown at the left of every source line.
-Task: Identify the design patterns that are ACTUALLY implemented in the code below (GoF, GRASP, enterprise/architectural patterns and framework idioms). The code covers the rider, driver, trip (booking), payment, driver matching, location and notification areas.
-For each pattern give: (1) exact pattern name and category, (2) a meaningful instance name, (3) every participant role mapped to the actual class/interface/function, (4) file path and line range of each participant, (5) the code interactions that prove it. Then list candidate patterns that are NOT really present (for example because only one implementation exists or roles are missing) and explain why. Do not invent classes that are not in the code.
+Context: Sarathi is an open-source Node.js/Express/TypeScript ride-sharing backend (github.com/AkhilMM2000/sarathi-backend, commit c8766f4) using MongoDB/Mongoose, tsyringe DI, Socket.IO, Redis, Stripe and the Google Distance Matrix API. Source lines are numbered on the left.
 
------ FILE: Part1/code/src/domain/repositories/IBaseRepository.ts (lines 1-8) -----
+Task: identify the design patterns that are ACTUALLY implemented in the excerpts below (GoF, enterprise/PoEAA, architectural, framework idioms). They cover trip booking, driver matching, location, notification, payment and the HTTP pipeline.
+Give a table with: pattern | category | instance name | participants (role = class/function, file:lines) | evidence (which calls prove it). Then list patterns that someone might wrongly claim here and why they are not present. Do not invent classes that are not shown.
+
+--- src/domain/repositories/IBaseRepository.ts (lines 1-8) ---
    1 export interface IBaseRepository<T> {
    2   create(data: Partial<T>): Promise<T>;
    3   findById(id: string): Promise<T | null>;
@@ -12,11 +13,7 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
    7   delete(id: string): Promise<boolean>;
    8 }
 
------ FILE: Part1/code/src/infrastructure/database/BaseRepository.ts (lines 1-41) -----
-   1 import { Model, Document, FilterQuery, UpdateQuery } from "mongoose";
-   2 import { IBaseRepository } from "../../domain/repositories/IBaseRepository";
-   3 import { ConflictError } from "../../domain/errors/ConflictError";
-   4 
+--- src/infrastructure/database/BaseRepository.ts (lines 5-23) ---
    5 export abstract class BaseRepository<T, U extends Document> implements IBaseRepository<T> {
    6   constructor(protected readonly model: Model<U>) {}
    7 
@@ -36,32 +33,8 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
   21   async findById(id: string): Promise<T | null> {
   22     return this.model.findById(id).lean() as Promise<T | null>;
   23   }
-  24 
-  25   async findOne(filter: FilterQuery<U>): Promise<T | null> {
-  26     return this.model.findOne(filter).lean() as Promise<T | null>;
-  27   }
-  28 
-  29   async findAll(filter: FilterQuery<U> = {}): Promise<T[]> {
-  30     return this.model.find(filter).lean() as Promise<T[]>;
-  31   }
-  32 
-  33   async update(id: string, updates: UpdateQuery<U>): Promise<T | null> {
-  34     return this.model.findByIdAndUpdate(id, updates, { new: true, runValidators: true }).lean() as Promise<T | null>;
-  35   }
-  36 
-  37   async delete(id: string): Promise<boolean> {
-  38     const result = await this.model.findByIdAndDelete(id);
-  39     return result !== null;
-  40   }
-  41 }
 
------ FILE: Part1/code/src/domain/repositories/IBookingrepository.ts (lines 17-62) -----
-  17 export interface PaginatedResult<T> {
-  18   data: T[];
-  19   total: number;
-  20   page: number;
-  21   totalPages: number;
-  22 }
+--- src/domain/repositories/IBookingrepository.ts (lines 23-45) ---
   23 export interface IBookingRepository {
   24   GetAllBookings(
   25     page: number,
@@ -85,36 +58,8 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
   43     start: Date,
   44     end?: Date
   45   ): Promise<boolean>;
-  46   getRideHistoryByRole(
-  47     id: string,
-  48     role: "user" | "driver",
-  49     page: number,
-  50     limit: number
-  51   ): Promise<PaginatedResult<rideHistory>>;
-  52 
-  53   countBookingsByStatus(driverId: string, year?: number, month?: number): Promise<Record<string, number>>;
-  54 
-  55   getDriverEarningsByMonth(driverId: string, year: number, month?: number): Promise<{
-  56     chartData: { label: string; totalEarnings: number }[];
-  57     totalEarnings: number;
-  58     totalRides: number;
-  59   }>;
-  60   getDriverDashboardStats(driverId: string): Promise<RawDriverDashboardStats>;
-  61   getAdminDashboardStats(): Promise<RawAdminDashboardStats>;
-  62 }
 
------ FILE: Part1/code/src/infrastructure/database/MongoBookingRepository.ts (lines 1-24) -----
-   1 import { BookingWithUsername, IBookingRepository, PaginatedResult, rideHistory, RawDriverDashboardStats, RawAdminDashboardStats } from "../../domain/repositories/IBookingrepository"; 
-   2 import { Booking, paymentStatus } from "../../domain/models/Booking"; 
-   3 import BookingModel, { BookingDocument } from "./modals/Bookingschema"; 
-   4 import { injectable } from "tsyringe";
-   5 import { AuthError } from "../../domain/errors/Autherror";
-   6 import { STATUS_CODES } from "http";
-   7 import { HTTP_STATUS_CODES } from "../../constants/HttpStatusCode";
-   8 import mongoose, { FilterQuery } from "mongoose";
-   9 import { BaseRepository } from "./BaseRepository";
-  10 import { PopulatedBooking } from "./interfaces/PopulatedBooking";
-  11 
+--- src/infrastructure/database/MongoBookingRepository.ts (lines 12-24) ---
   12 @injectable()
   13 export class MongoBookingRepository extends BaseRepository<Booking, BookingDocument> implements IBookingRepository {
   14   constructor() {
@@ -129,7 +74,7 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
   23     return super.findById(id);
   24   }
 
------ FILE: Part1/code/src/application/services/NotificationService.ts (lines 1-17) -----
+--- src/application/services/NotificationService.ts (lines 1-17) ---
    1 
    2 export interface INotificationService {
    3     sendBookingNotification(driverId: string, data: any): void;
@@ -148,7 +93,7 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
   16   }
   17   
 
------ FILE: Part1/code/src/infrastructure/services/SocketNotification.ts (lines 1-72) -----
+--- src/infrastructure/services/SocketNotification.ts (lines 1-33) ---
    1 // src/infrastructure/services/SocketNotificationService.ts
    2 import { injectable } from "tsyringe";
    3 import { INotificationService } from "../../application/services/NotificationService";
@@ -182,55 +127,8 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
   31     this.io.to(socketId).emit("cancel:booking", data);
   32   }
   33 }
-  34 
-  35 async paymentNotification(driverId: string, data: any):Promise<void> {
-  36   
-  37   const socketId = await redis.get<string>(`driver:socket:${driverId}`);
-  38   console.log(driverId,' driver id each payment notification reach',socketId)
-  39   if (socketId) {
-  40     this.io.to(socketId).emit("payment:status", data);
-  41   }
-  42 }
-  43 
-  44    async sendBookingConfirmation(userId: string, data: any):Promise< void> {
-  45     const socketId = await redis.get<string>(`user:socket:${userId}`);
-  46        
-  47         if (socketId) {
-  48         this.io.to(socketId).emit("booking:confirmation", data);
-  49         }
-  50     }
-  51   bookingAssignedNotification(bookingId: string, driverId?: string): void {
-  52     this.io.emit("booking:assigned", { bookingId, driverId });
-  53   }
-  54 
-  55 async rejectBookingNotification(userId: string, data: any): Promise<void> {
-  56   const socketId = await redis.get<string>(`user:socket:${userId}`);
-  57 
-  58   if (socketId) {
-  59   this.io.to(socketId).emit("booking:reject", data);
-  60   }
-  61 }
-  62 async adminChangeDriverStatusNotification(
-  63     driverId: string,
-  64     data: any
-  65   ): Promise<void> {
-  66     const socketId = await redis.get<string>(`driver:socket:${driverId}`);
-  67     if (socketId) {
-  68       this.io.to(socketId).emit("admin:changeDriverStatus", data);
-  69     }
-  70   }
-  71     
-  72 }
 
------ FILE: Part1/code/src/infrastructure/socket/socket.ts (lines 1-20) -----
-   1 
-   2 import { Server as HttpServer } from 'http';
-   3 import { Server, Socket } from 'socket.io';
-   4 import { container } from 'tsyringe';
-   5 import { SaveMessageUseCase } from '../../application/use_cases/saveMessagechat';
-   6 import { Role } from '../../domain/models/Chat';
-   7 import { UpdateUserData } from '../../application/use_cases/User/UpdateUserData';
-   8 import { EditDriverProfile } from '../../application/use_cases/Driver/EditDriverProfile';
+--- src/infrastructure/socket/socket.ts (lines 9-16) ---
    9 let io: Server;
   10 export const initializeSocket = (server: HttpServer): void => {
   11   io = new Server(server, {
@@ -239,64 +137,21 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
   14       credentials: true,
   15     },
   16   });
-  17 
-  18   io.on('connection', (socket: Socket) => {
-  19 
-  20 
 
------ FILE: Part1/code/src/infrastructure/socket/socket.ts (lines 178-184) -----
- 178 };
- 179 
- 180 
+--- src/infrastructure/socket/socket.ts (lines 181-184) ---
  181 export const getIO = (): Server => {
  182   if (!io) throw new Error("Socket.io server not initialized");
  183   return io;
  184 };
 
------ FILE: Part1/code/src/infrastructure/socket/SocketNotification.ts (lines 13-40) -----
-  13 export const NotificationSocket = () => {
-  14   const io = getIO();
-  15 
+--- src/infrastructure/socket/SocketNotification.ts (lines 16-20) ---
   16   io.on("connection", (socket: Socket) => {
   17  
   18     socket.on("driver:online", async(driverId: string) => {
   19       await redis.set(`driver:socket:${driverId}`, socket.id);
   20       await redis.set(`socket:driver:${socket.id}`, driverId);
-  21 
-  22       try {
-  23         // 1. Fetch driver profile to get coordinates
-  24         const driver = await DriverModel.findById(driverId);
-  25         if (!driver || !driver.location) return;
-  26 
-  27         let driverLng: number;
-  28         let driverLat: number;
-  29 
-  30         if ("coordinates" in driver.location) {
-  31           [driverLng, driverLat] = driver.location.coordinates;
-  32         } else {
-  33           driverLng = driver.location.longitude;
-  34           driverLat = driver.location.latitude;
-  35         }
-  36 
-  37         // 2. Fetch all active pending broadcast bookings
-  38         const pendingBookings = await BookingModel.find({
-  39           status: BookingStatus.PENDING,
-  40           driverId: null
 
------ FILE: Part1/code/src/application/services/FareCalculatorService.ts (lines 1-11) -----
-   1 import { AuthError } from "../../domain/errors/Autherror";
-   2 import { BookingType } from "../../domain/models/Booking";
-   3 
-   4 export interface IFareCalculatorService {
-   5   calculate(params: {
-   6     bookingType: BookingType;
-   7     estimatedKm?: number;
-   8     startDate: Date;
-   9     endDate?: Date;
-  10   }): number;
-  11 }
-
------ FILE: Part1/code/src/infrastructure/services/FareCalculatorService.ts (lines 1-38) -----
+--- src/infrastructure/services/FareCalculatorService.ts (lines 1-38) ---
    1 import { injectable } from "tsyringe";
    2 import { IFareCalculatorService } from "../../application/services/FareCalculatorService";
    3 import { BookingType } from "../../domain/models/Booking";
@@ -336,7 +191,7 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
   37   }
   38 }
 
------ FILE: Part1/code/src/application/use_cases/User/BookDriver.ts (lines 27-60) -----
+--- src/application/use_cases/User/BookDriver.ts (lines 27-57) ---
   27 @injectable()
   28 export class BookDriver implements IBookDriverUseCase  {
   29   constructor(
@@ -368,75 +223,8 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
   55       startDate,
   56       endDate,
   57     });
-  58 
-  59     let targetedDriverIds: string[] = [];
-  60 
 
------ FILE: Part1/code/src/application/use_cases/Driver/AcceptBooking.ts (lines 1-54) -----
-   1 import { inject, injectable } from "tsyringe";
-   2 import { IBookingRepository } from "../../../domain/repositories/IBookingrepository";
-   3 import { BookingStatus, Booking } from "../../../domain/models/Booking";
-   4 import { AuthError } from "../../../domain/errors/Autherror";
-   5 import { INotificationService } from "../../services/NotificationService";
-   6 import { TOKENS } from "../../../constants/Tokens";
-   7 import { HTTP_STATUS_CODES } from "../../../constants/HttpStatusCode";
-   8 import BookingModel from "../../../infrastructure/database/modals/Bookingschema";
-   9 import { Types } from "mongoose";
-  10 import { IAcceptBookingUseCase, AcceptBookingInput } from "./interfaces/IAcceptBookingUseCase";
-  11 import { PopulatedDriver } from "../../../infrastructure/database/interfaces/PopulatedBooking";
-  12 
-  13 @injectable()
-  14 export class AcceptBooking implements IAcceptBookingUseCase {
-  15   constructor(
-  16     @inject(TOKENS.IBOOKING_REPO) private _bookingRepo: IBookingRepository,
-  17     @inject(TOKENS.NOTIFICATION_SERVICE) private _notificationService: INotificationService
-  18   ) {}
-  19 
-  20   async execute(data: AcceptBookingInput): Promise<Booking> {
-  21     const { bookingId, driverId } = data;
-  22 
-  23     // Atomic update: only updates status to CONFIRMED if status is currently PENDING
-  24     const updatedBooking = await BookingModel.findOneAndUpdate(
-  25       { _id: new Types.ObjectId(bookingId), status: BookingStatus.PENDING },
-  26       { status: BookingStatus.CONFIRMED, driverId: new Types.ObjectId(driverId) },
-  27       { new: true }
-  28     ).populate("driverId", "name profileImage mobile");
-  29 
-  30     // If updatedBooking is null, it was either already accepted or expired
-  31     if (!updatedBooking) {
-  32       throw new AuthError("This booking request is no longer available.", HTTP_STATUS_CODES.BAD_REQUEST);
-  33     }
-  34 
-  35     const driverObj = updatedBooking.driverId as unknown as PopulatedDriver;
-  36 
-  37     // Notify user via Socket.IO
-  38     await this._notificationService.sendBookingConfirmation(updatedBooking.userId.toString(), {
-  39       bookingId: (updatedBooking._id as Types.ObjectId).toString(),
-  40       status: BookingStatus.CONFIRMED,
-  41       driver: driverObj ? {
-  42         _id: driverObj._id.toString(),
-  43         name: driverObj.name,
-  44         mobile: driverObj.mobile,
-  45         profileImage: driverObj.profileImage || "N/A"
-  46       } : undefined
-  47     });
-  48 
-  49     // Notify other online drivers to dismiss their popups
-  50     this._notificationService.bookingAssignedNotification((updatedBooking._id as Types.ObjectId).toString(), driverId);
-  51 
-  52     return updatedBooking.toObject() as Booking;
-  53   }
-  54 }
-
------ FILE: Part1/code/src/domain/services/IStripeService.ts (lines 1-24) -----
-   1 import Stripe from "stripe";
-   2 
-   3 export interface CreatePaymentIntentParams {
-   4     amount: number;
-   5     driverStripeAccountId: string;
-   6     platformFee: number;
-   7   }
-   8   
+--- src/domain/services/IStripeService.ts (lines 9-22) ---
    9   export interface IStripeService {
   10     createPaymentIntent(params: CreatePaymentIntentParams): Promise<{
   11       clientSecret: string;
@@ -451,17 +239,8 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
   20 ): Promise<Stripe.Transfer>;
   21 
   22   }
-  23   
-  24   
 
------ FILE: Part1/code/src/infrastructure/services/StripeService.ts (lines 1-50) -----
-   1 // src/infrastructure/services/StripeService.ts
-   2 
-   3 import Stripe from 'stripe';
-   4 import { injectable } from 'tsyringe';
-   5 import { IStripeService, CreatePaymentIntentParams } from '../../domain/services/IStripeService';
-   6 import { AuthError } from '../../domain/errors/Autherror';
-   7 
+--- src/infrastructure/services/StripeService.ts (lines 8-41) ---
    8 @injectable()
    9 export class PaymentService  implements IStripeService {
   10   private stripe: Stripe;
@@ -496,31 +275,8 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
   39       return { clientSecret: paymentIntent.client_secret!,
   40         paymentIntentId: paymentIntent.id,
   41        };
-  42 
-  43 
-  44 
-  45     } catch (err: any) {
-  46       console.error('Stripe Payment Intent Creation Error:', err.message);
-  47       throw new AuthError(`${err.message}`, 500);
-  48     }
-  49   }
-  50 
 
------ FILE: Part1/code/src/middleware/authMiddleware.ts (lines 1-60) -----
-   1 import { Request, Response, NextFunction } from 'express';
-   2 import jwt from 'jsonwebtoken';
-   3 import { HTTP_STATUS_CODES } from '../constants/HttpStatusCode';
-   4 
-   5 // Extend Express Request to include the decoded user payload.
-   6 export interface AuthenticatedRequest extends Request {
-   7   user?: {
-   8     id: string;
-   9     email: string;
-  10     role: 'user' | 'driver' | 'admin';
-  11   };
-  12 }
-  13 
-  14 
+--- src/middleware/authMiddleware.ts (lines 15-50) ---
   15 export const protectRoute = (
   16   allowedRoles: ('user' | 'driver' | 'admin')[] = []
   17 ) => {
@@ -557,25 +313,8 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
   48       }
   49 
   50       next();
-  51     } catch (err:any) {
-  52      
-  53       
-  54   
-  55       res.status(HTTP_STATUS_CODES.UNAUTHORIZED).json({ message: 'Invalid or expired token' });
-  56       return;
-  57  
-  58     } 
-  59   };
-  60 };
 
------ FILE: Part1/code/src/middleware/checkBlocked.ts (lines 10-30) -----
-  10 @injectable()
-  11 export class CheckBlockedUserOrDriver {
-  12   constructor(
-  13     @inject(TOKENS.IUSER_REPO) private userRepository: IUserRepository,
-  14     @inject(TOKENS.IDRIVER_REPO) private driverRepository: IDriverRepository
-  15   ) {}
-  16 
+--- src/middleware/checkBlocked.ts (lines 17-57) ---
   17   async handle(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
   18     try {
   19       const userId = req.user?.id;
@@ -590,8 +329,35 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
   28    
   29 
   30       let userOrDriver;
+  31       if (role === "user") {
+  32         if (!isValidObjectId(userId)) {
+  33         
+  34           
+  35           res.status(HTTP_STATUS_CODES.BAD_REQUEST).json({ message: "Invalid user ID format" });
+  36           return;
+  37         }
+  38         userOrDriver = await this.userRepository.getUserById(userId);
+  39       }
+  40        else if (role === "driver") {
+  41         userOrDriver = await this.driverRepository.findDriverById(userId);
+  42       } else {
+  43        res.status(HTTP_STATUS_CODES.FORBIDDEN).json({ message: "Invalid role" });
+  44        return 
+  45       }
+  46 
+  47       if (!userOrDriver) {
+  48          res.status(HTTP_STATUS_CODES.UNAUTHORIZED).json({ message: "Account not found" });
+  49          return 
+  50       }
+  51 
+  52       if (userOrDriver.isBlock) {
+  53         res.status(HTTP_STATUS_CODES.FORBIDDEN).json({ blocked: true, message: "Your account is blocked. Contact support." });
+  54         return;
+  55       }
+  56       
+  57  next(); 
 
------ FILE: Part1/code/src/infrastructure/utils/catchAsync.ts (lines 1-13) -----
+--- src/infrastructure/utils/catchAsync.ts (lines 1-13) ---
    1 import { Request, Response, NextFunction, RequestHandler } from "express";
    2 
    3 /**
@@ -606,16 +372,7 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
   12   };
   13 };
 
------ FILE: Part1/code/src/presentation/routes/BookingRoute.ts (lines 1-17) -----
-   1 import { Router } from "express";
-   2 import { BookingController } from "../controllers/BookingController";
-   3 import { CheckBlockedUserOrDriver } from "../../middleware/checkBlocked";
-   4 import { container } from "tsyringe";
-   5 import { protectRoute } from "../../middleware/authMiddleware";
-   6 import { TOKENS } from "../../constants/Tokens";
-   7 import { ROUTES } from "../../constants/Routes";
-   8 
-   9 
+--- src/presentation/routes/BookingRoute.ts (lines 10-17) ---
   10 const router = Router();
   11 const checkBlockedMiddleware = container.resolve(CheckBlockedUserOrDriver);
   12 export const bookingController=container.resolve<BookingController>(TOKENS.BOOKING_CONTROLLER);
@@ -625,31 +382,14 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
   16 router.patch(ROUTES.BOOKING.ACCEPT, protectRoute(["driver"]), checkBlockedMiddleware.handle.bind(checkBlockedMiddleware), bookingController.acceptBooking.bind(bookingController));
   17 export default router;
 
------ FILE: Part1/code/src/infrastructure/config/container.ts (lines 44-101) -----
+--- src/infrastructure/config/container.ts (lines 44-48) ---
   44 // Register repositories
   45 container.registerSingleton<IUserRepository>(TOKENS.IUSER_REPO,  MongoUserRepository );
   46 container.registerSingleton<IDriverRepository>(TOKENS.IDRIVER_REPO,MongoDriverRepository )
   47 container.registerSingleton<IVehicleRepository>(TOKENS.VEHICLE_REPO,MongoVehicleRepository)
   48 container.registerSingleton<IBookingRepository>(TOKENS.IBOOKING_REPO, MongoBookingRepository);
-  49 // Register servicesimplements 
-  50 container.registerSingleton<IHashService>(TOKENS.HASH_SERVICE,BcryptHashService );
-  51 container.registerSingleton<EmailService>(TOKENS.EMAIL_SERVICE,  EmailService );
-  52 container.registerSingleton<WalletService >(TOKENS.WALLET_SERVICE, WalletService );
-  53 container.register(TOKENS.REFERAL_CODE_SERVICE, {
-  54   useClass: ReferralCodeService,
-  55 });
-  56 
-  57 
-  58 container.registerSingleton<IFileStorageService>(TOKENS.FILE_SERVICE,  CloudinaryFileStorageService)
-  59 
-  60 container.registerSingleton<IRedisrepository>(
-  61          TOKENS.USER_REGISTERSTORE,
-  62     RedisUserRegistrationStore
-  63   );
-  64   container.registerSingleton<GoogleDistanceService>(TOKENS.GOOGLE_DISTANCE_SERVICE, GoogleDistanceService);
-  65   container.register<SMSService>("SMSService", { useClass: TwilioSMSService });
-  66 
-  67 
+
+--- src/infrastructure/config/container.ts (lines 68-90) ---
   68   container.registerSingleton<IFareCalculatorService>(TOKENS.IFARE_CALCULATE_SERVICE,
   69    FareCalculatorService,
   70   );
@@ -673,14 +413,3 @@ For each pattern give: (1) exact pattern name and category, (2) a meaningful ins
   88   container.registerSingleton<INotificationService>(TOKENS.NOTIFICATION_SERVICE,
   89     SocketNotificationService,
   90   );
-  91 
-  92   //user rate Driver
-  93   container.registerSingleton<IDriverReviewRepository>(
-  94   TOKENS.DRIVER_REVIEW_REPO,
-  95   MongoDriverReviewRepository
-  96 );
-  97  
-  98 
-  99 container.register<IGoogleMapService>('IGoogleMapService', {
- 100   useClass: GoogleMapService,
- 101 });

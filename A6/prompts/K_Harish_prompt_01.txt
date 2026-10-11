@@ -1,60 +1,20 @@
-Context: Sarathi is an open-source Node.js/Express/TypeScript ride-sharing (driver-hire) backend (https://github.com/AkhilMM2000/sarathi-backend, commit c8766f4). It uses MongoDB/Mongoose, tsyringe dependency injection, Socket.IO, Upstash Redis, Stripe and the Google Distance Matrix API. Line numbers are shown at the left of every source line.
-New requirement (Agile change CH03 - multiple ride types and dynamic pricing): besides ONE_WAY (Rs 10/km, minimum Rs 450) and ROUND_TRIP/RANGE_OF_DATES (Rs 1000/day) add HOURLY (Rs 200/hour, minimum 4 hours) and OUTSTATION (Rs 12/km plus Rs 300 driver allowance per day). Add dynamic pricing: +25% when the ride starts in peak hours (08:00-10:59 or 17:00-20:59 IST) and +20% when fewer than 3 drivers are available near the pickup. Adding a new ride type or pricing rule should not require editing existing fare code.
-Questions: (1) Which code smells in the current fare code make this change risky? (2) Which design pattern(s) would you introduce and why? Name every participant. (3) Which existing patterns are preserved, modified, extended, replaced or removed? (4) Show the TypeScript changes needed in the files below.
+Context: Sarathi is an open-source Node.js/Express/TypeScript ride-sharing backend (github.com/AkhilMM2000/sarathi-backend, commit c8766f4) using MongoDB/Mongoose, tsyringe DI, Socket.IO, Redis, Stripe and the Google Distance Matrix API. Source lines are numbered on the left.
 
------ FILE: Part1/code/src/domain/models/Booking.ts (lines 1-47) -----
-   1 import { Types } from "mongoose";
-   2 
-   3 export enum paymentStatus {
-   4   PENDING = "PENDING",
-   5     COMPLETED = "COMPLETED",
-   6     FAILED = "FAILED",
-   7     }
-   8 export enum BookingStatus {
-   9   PENDING = "PENDING", 
-  10   CONFIRMED = "CONFIRMED",
-  11   COMPLETED = "COMPLETED",          
-  12   CANCELLED = "CANCELLED",
-  13   REJECTED= "REJECTED",
-  14   EXPIRED = "EXPIRED",
-  15     }
+Change request CH03 - multiple ride types and dynamic pricing: keep ONE_WAY (Rs 10/km, min Rs 450) and ROUND_TRIP (Rs 1000/day); add HOURLY (Rs 200/hour, min 4 hours) and OUTSTATION (Rs 12/km + Rs 300 per day). Add +25% for rides starting 08:00-10:59 or 17:00-20:59 IST and +20% when fewer than 3 drivers are nearby. A new ride type or pricing rule must not require editing existing fare code.
+
+Answer in this order, concisely:
+1. Code smells or defects in the current code that make this change risky (cite file:line).
+2. The design pattern(s) you would introduce, with every participant role mapped to a class name.
+3. Effect on the patterns already in this code: preserved / modified / extended / replaced / removed, with a reason.
+4. The key TypeScript changes (only the new/changed parts).
+
+--- src/domain/models/Booking.ts (lines 16-19) ---
   16 export enum BookingType {
   17   ONE_WAY = "ONE_RIDE",
   18     ROUND_TRIP = "RANGE_OF_DATES",  
   19         }
-  20 export interface Booking {
-  21     _id?: Types.ObjectId | string;
-  22     id?: string;
-  23     userId:Types.ObjectId;
-  24     driverId?: Types.ObjectId;
-  25     fromLocation?: string;
-  26     toLocation?: string; 
-  27     startDate: Date;
-  28     endDate?: Date;
-  29     estimatedKm?: number;
-  30     finalKm?: number;
-  31     estimatedFare?: number;
-  32     finalFare?: number;
-  33     bookingType:BookingType; 
-  34     status?: BookingStatus; 
-  35     paymentStatus?: paymentStatus; 
-  36     paymentMode:'stripe'
-  37    reason?: string;
-  38 paymentIntentId?:string;
-  39     driver_fee?: number;
-  40     platform_fee?: number;
-  41     walletDeduction?: number;
-  42     fromLat?: number;
-  43     fromLng?: number;
-  44     userAcknowledged?: boolean;
-  45     createdAt?: Date;   
-  46     updatedAt?: Date;
-  47   }
 
------ FILE: Part1/code/src/application/services/FareCalculatorService.ts (lines 1-11) -----
-   1 import { AuthError } from "../../domain/errors/Autherror";
-   2 import { BookingType } from "../../domain/models/Booking";
-   3 
+--- src/application/services/FareCalculatorService.ts (lines 4-11) ---
    4 export interface IFareCalculatorService {
    5   calculate(params: {
    6     bookingType: BookingType;
@@ -64,12 +24,7 @@ Questions: (1) Which code smells in the current fare code make this change risky
   10   }): number;
   11 }
 
------ FILE: Part1/code/src/infrastructure/services/FareCalculatorService.ts (lines 1-38) -----
-   1 import { injectable } from "tsyringe";
-   2 import { IFareCalculatorService } from "../../application/services/FareCalculatorService";
-   3 import { BookingType } from "../../domain/models/Booking";
-   4 import { AuthError } from "../../domain/errors/Autherror";
-   5 
+--- src/infrastructure/services/FareCalculatorService.ts (lines 6-38) ---
    6 @injectable()
    7 export class FareCalculatorService implements IFareCalculatorService {
    8   private readonly PER_KM_RATE = 10; // move to env/config later
@@ -104,63 +59,15 @@ Questions: (1) Which code smells in the current fare code make this change risky
   37   }
   38 }
 
------ FILE: Part1/code/src/application/use_cases/User/GetEstimatedFare.ts (lines 1-20) -----
-   1 import { inject, injectable } from "tsyringe";
-   2 import { IFareCalculatorService } from "../../services/FareCalculatorService"; 
-   3 import { BookingType } from "../../../domain/models/Booking"; 
-   4 import { TOKENS } from "../../../constants/Tokens";
-   5 import { IGetEstimatedFare } from "./interfaces/IGetEstimatedFare";
-   6 import { GetEstimatedFareRequest } from "../../../presentation/schemas/booking/BookingRequestDTO";
-   7 
-   8 @injectable()
-   9 export class GetEstimatedFare implements IGetEstimatedFare{
-  10   constructor(
-  11     @inject(TOKENS.IFARE_CALCULATE_SERVICE)
-  12     private _fareCalculatorService: IFareCalculatorService
-  13   ) {}
-  14 
-  15 
-  16   async execute(params: GetEstimatedFareRequest): Promise<number> {
-  17  
-  18     return this._fareCalculatorService.calculate(params);
-  19   }
-  20 }
-
------ FILE: Part1/code/src/application/use_cases/User/BookDriver.ts (lines 27-100) -----
-  27 @injectable()
-  28 export class BookDriver implements IBookDriverUseCase  {
-  29   constructor(
-  30     @inject(TOKENS.IBOOKING_REPO) private _bookingRepo: IBookingRepository,
-  31     @inject(TOKENS.IDRIVER_REPO) private _driverRepo: IDriverRepository,
-  32     @inject(TOKENS.IFARE_CALCULATE_SERVICE) private _fareCalculator: IFareCalculatorService,
-  33     @inject(TOKENS.NOTIFICATION_SERVICE) private _notificationService: INotificationService,
-  34     @inject(TOKENS.GOOGLE_DISTANCE_SERVICE) private _distanceService: GoogleDistanceService
-  35   ) {}
-  36 
-  37   async execute(data: BookDriverInput): Promise<Booking> {
-  38     const { driverId, startDate, endDate, bookingType} = data;
-  39 
-  40     if (endDate && startDate > endDate) {
-  41       throw new AuthError("End date must be greater than start date", HTTP_STATUS_CODES.BAD_REQUEST);
-  42     }
-  43 
-  44     // Check availability only if a specific driver was requested
-  45     if (driverId) {
-  46       const isBooked = await this._bookingRepo.checkDriverAvailability(driverId, startDate, endDate);
-  47       if (!isBooked) {
-  48         throw new AuthError("Driver is already booked for the selected time.", HTTP_STATUS_CODES.BAD_REQUEST);
-  49       }
-  50     }
-  51 
+--- src/application/use_cases/User/BookDriver.ts (lines 52-57) ---
   52     const estimatedFare = this._fareCalculator.calculate({
   53       bookingType,
   54       estimatedKm: data.estimatedKm,
   55       startDate,
   56       endDate,
   57     });
-  58 
-  59     let targetedDriverIds: string[] = [];
-  60 
+
+--- src/application/use_cases/User/BookDriver.ts (lines 61-99) ---
   61     if (!driverId) {
   62       // 1. Find all approved, active-payment drivers within 30km straight-line radius
   63       console.log(data.fromLat, data.fromLng, "fromLat,fromLng")
@@ -200,26 +107,8 @@ Questions: (1) Which code smells in the current fare code make this change risky
   97         throw new AuthError("No drivers available within 20km road distance from your pickup location.", HTTP_STATUS_CODES.BAD_REQUEST);
   98       }
   99     }
- 100 
 
------ FILE: Part1/code/src/application/use_cases/Driver/UpdateBookingstatus.ts (lines 26-64) -----
-  26   async execute(input: UpdateBookingStatusInput): Promise<void> {
-  27     const { bookingId, status, reason, finalKm } = input;
-  28     let finalFare: number | undefined = undefined;
-  29 
-  30     const booking = await this._bookingRepo.findBookingById(bookingId);
-  31     
-  32     if (!booking) {
-  33       throw new AuthError(ERROR_MESSAGES.BOOKING_NOT_FOUND, HTTP_STATUS_CODES.NOT_FOUND);
-  34     }
-  35 
-  36     if (status === "REJECTED" && !reason) {
-  37       throw new AuthError(
-  38         "Reason is required when rejecting a booking.",
-  39         HTTP_STATUS_CODES.BAD_REQUEST
-  40       );
-  41     }
-  42 
+--- src/application/use_cases/Driver/UpdateBookingstatus.ts (lines 43-54) ---
   43     // If ride is completed and finalKm is provided, calculate final fare
   44     if (status === "COMPLETED") {
   45       if (finalKm === undefined || finalKm === null) {
@@ -232,13 +121,3 @@ Questions: (1) Which code smells in the current fare code make this change risky
   52 
   53       finalFare = estimated + finalKm * ratePerKm;
   54     }
-  55     if (status === "REJECTED" && reason){
-  56       this._notificationService.rejectBookingNotification(booking.userId.toString(),{status,startDate:booking.startDate,bookingId,reason})
-  57     }
-  58     // Always update status, and optionally finalFare and reason
-  59     await this._bookingRepo.updateBooking(bookingId, {
-  60       status,
-  61       ...(reason && { reason }),
-  62       ...(finalFare !== undefined && { finalFare }),
-  63     });
-  64     this._notificationService.sendBookingConfirmation(booking.userId.toString(),{status,startDate:booking.startDate,bookingId});

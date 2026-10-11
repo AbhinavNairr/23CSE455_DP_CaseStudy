@@ -144,7 +144,12 @@ def main():
         f"{esc(r['pattern_name'])} & {esc(r['language'])} & {r['source_loc']} & {r['max_function_cc']} & {esc(r['test_result'])} & {r['median_process_ms']} \\\\"
         for r in cross)
     notes_rows = "\n".join(f"{esc(r['pattern_name'])} / {esc(r['language'])} & {esc(r['language_notes'])} \\\\" for r in cross)
-    llm_rows = "\n".join(f"{esc(r['part'])} & {esc(r['model_and_date'])} & {path(r['output_file'])} & {esc(r['evaluation'])} \\\\" for r in llm)
+    def owner(f):
+        n = f.split("/")[-1].split("_output_")[0].replace("_claude", "")
+        return n.replace("_", " ")
+    llm_rows = "\n".join(f"{esc(r['part'])} & {esc(owner(r['output_file']))} & "
+                         f"{'ChatGPT free' if r['model_and_date'].startswith('ChatGPT') else 'Claude Opus 5.5'} & {esc(r['evaluation'])} \\\\"
+                         for r in llm)
     rejected_rows = "\n".join(f"{esc(n)} & {esc(v)} & {esc(why)} \\\\" for n, v, why in P.REJECTED)
     students = "\n".join(f"{esc(a)} & {esc(b)} & {esc(c)} \\\\" for a, b, c in TEAM)
     records = "".join(instance_record(r, VERIFY[r["instance_name"]]) for r in base)
@@ -352,7 +357,8 @@ about 450 more NLOC and more, smaller functions; some use cases (\texttt{CancelB
 now enforce ownership and supply rules. More or fewer LOC alone does not prove a better design; the evidence for the improvement is
 that two baseline defects are now caught by tests and that the old fare behaviour is preserved by unchanged tests. Remaining limitations:
 \texttt{UpdateBookingStatus} still does not check that the caller is the booking's driver; the pre-booking estimate cannot include the
-low-supply surcharge.
+low-supply surcharge; cancellation is still read-then-update rather than one atomic conditional update, and acceptance does not re-check
+\texttt{activePayment} -- the last two were pointed out by the ChatGPT reviews in Section~\ref{sec:llm} and are left as future work.
 
 %=====================================================================
 \section{Part 3 Cross-language comparison}
@@ -393,19 +399,33 @@ subscription never keeps a disconnected observer alive -- a concern garbage-coll
 
 %=====================================================================
 \section{LLM records and human verification}\label{sec:llm}
-\textbf{Run and model:} two kinds of runs. (a) Dilip Kumar Reddy used Claude Opus 5.5 in the Claude Code desktop app (paid tier, not free) on 2026-10-11 for
-the application study and first pattern list; the exact prompt and raw reply are in \texttt{prompts/Dilip\_Kumar\_Reddy\_claude\_*}. (b) Each member runs two
-prompts on a free public model (ChatGPT or Gemini, no login needed); prompt files embed the exact source excerpts given to the model.
-Only runs that were actually performed are listed; \texttt{data/llm.csv} is regenerated as outputs arrive.
+\textbf{Run and model:} 10 real runs on 2026-10-11. (a) Dilip Kumar Reddy's prompt to Claude Opus 5.5 in the Claude Code desktop app (paid tier,
+not a free tool) for the application study and first pattern list (\texttt{prompts/Dilip\_Kumar\_Reddy\_claude\_*}). (b) Nine prompts on
+\textbf{ChatGPT, free tier, logged out} (the interface shows no model name). Members were unavailable, so with the team lead's approval each
+prompt file was pasted unchanged into a new chat from his computer, with the browser driven by Claude Code; the member named on a file is the
+owner of that topic, not the person who typed it. Prompts embed the exact source excerpts, specifications or CSVs the model received.
 
-\textbf{Claims and evaluation:}\\
-\begin{tabular}{@{}P{0.17\linewidth}P{0.2\linewidth}P{0.2\linewidth}P{0.36\linewidth}@{}}\toprule Part & Model and date & Output & Evaluation\\\midrule
+\textbf{Inputs and outputs:} prompt, input, raw output and verification paths are in \texttt{data/llm.csv}; inputs come from the baseline
+commit c8766f4 (\texttt{Part1/code}) or from our own specifications and datasets. Outputs were captured from the rendered page and converted
+to Markdown without editing the content.
+
+\textbf{Claims and evaluation:}
+\begin{longtable}{@{}P{0.17\linewidth}P{0.14\linewidth}P{0.12\linewidth}P{0.5\linewidth}@{}}\toprule Part & Topic owner & Model & Evaluation (details in the verification file)\\\midrule\endhead
 @@LLM@@
-\bottomrule\end{tabular}
+\bottomrule\end{longtable}
 
-\textbf{Generated code:} the TypeScript changes and the Part 3 snippets were written with AI assistance in the same Claude Code session and are
-accepted only through the evidence in this report: 41 application tests, 22 fixtures per language set, \texttt{tsc} with no new errors and
-\texttt{-Wall -Wextra -Wpedantic} with no warnings. Each member reviews their part and signs \texttt{HUMAN\_VERIFICATION.md}.
+\textbf{What the evaluation showed:} 3 runs correct, 7 partially correct, none fully incorrect. All 12 programs that ChatGPT generated for the
+cross-language prompts compiled and passed every fixture (\texttt{prompts/*\_coderun\_02.txt}), but its explanations made factual slips about its
+own code (a JavaScript ``inheritance'' entry, size rankings). In pattern discovery it agreed with our Repository, DI, Layered, Adapter and
+middleware-chain findings and with all six rejected candidates, but disputed three of our classifications (Observer with remote observers,
+the function-wrapper Decorator \texttt{catchAsync}, the module-level Singleton); we keep them with their caveats stated in the records. For the
+change requests it proposed the same Strategy designs, preferred a transition table or a single eligibility check where we used State, and
+found two weaknesses that remain in our implementation (non-atomic cancellation, no \texttt{activePayment} check on acceptance). A model
+statement was never accepted without code or test evidence.
+
+\textbf{Generated code in our deliverables:} the TypeScript changes and the Part 3 snippets were written with AI assistance in the Claude Code session
+and are accepted only through the evidence in this report: 41 application tests, 22 fixtures per language set, \texttt{tsc} with no new errors and
+\texttt{-Wall -Wextra -Wpedantic} with no warnings. Each topic owner reviews their part and signs \texttt{HUMAN\_VERIFICATION.md}.
 
 %=====================================================================
 \section{Findings, contributions and references}
@@ -415,6 +435,8 @@ both status lifecycles had no behavioural pattern, and two defects followed from
 jump a rejected driver to approved). (3) The four requirements introduced two State, two Strategy and one Decorator instance and extended
 the notification Adapter/Observer, ending at 12 types and 21 instances with no removals. (4) Across languages the pattern structure stays the
 same; what changes is how roles are declared (nominal vs structural), how events are dispatched, and whether ownership must be explicit.
+(5) The LLM was useful as a reviewer -- it confirmed most findings and exposed two remaining weaknesses -- but 7 of 10 answers needed correction,
+so its statements served as hypotheses to verify, not as evidence.
 Limitations: no live end-to-end run against external services; dependency drift; no upstream license; client-side observers out of scope.
 
 \textbf{Contributions} (\texttt{data/contributions.csv}):\\
