@@ -10,7 +10,7 @@ Case study: **Design Pattern Analysis in a Node.js/Express Ride-Sharing Applicat
 | AM.SC.U4CSE23326 | Sai Sameer | CSE D | CH01 new driver status, Part 3 Observer |
 | AM.SC.U4CSE23134 | M Kumar | CSE B | CH02 ride cancellation, Part 3 State |
 | AM.SC.U4CSE23129 | K Harish | CSE B | CH03 ride types + dynamic pricing, Part 3 Strategy |
-| AM.SC.U4CSE23154 | S Leela Shankar | TO FILL | UML diagrams, Part 3 measurements, dataset audit, slides |
+| AM.SC.U4CSE23154 | S Leela Shankar | CSE B | UML diagrams, Part 3 measurements, dataset audit, slides |
 
 Detailed allocation and evidence paths: `data/contributions.csv`. Sign-off sheet: `HUMAN_VERIFICATION.md`.
 
