@@ -106,13 +106,7 @@ B4/
   tools/                      metrics, diagrams and workbook builder
 ```
 
-## Submission steps
 
-1. Obtain and record faculty approval for the selected public application.
-2. Each member reviews and signs `HUMAN_VERIFICATION.md` and their two verification records.
-3. Fork `https://github.com/aswathymohan-amrita/23CSE455_DP_CaseStudy`.
-4. Upload only `B4/`, commit it, and open one pull request to `main` titled **B4: Final submission**.
-5. Record the final submission commit and pull-request URL in the verification form.
 
 ## References
 
