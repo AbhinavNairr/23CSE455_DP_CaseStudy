@@ -5,7 +5,7 @@ own check of their part. Before the pull request is opened, each member should:
 
 1. Read their change README / Part 3 folder and the rows of `data/patterns_evolution.csv` for their instances.
 2. Re-run the commands in `README.md` for their part.
-3. Run their two LLM prompts (see `prompts/README.md`), save the raw outputs, and review the verification notes.
+3. Read the two LLM records for their topic (`prompts/README.md`) and the verification notes, and sign the verification files.
 4. Sign below.
 
 | Member | Area | Automated evidence | Signature / date |

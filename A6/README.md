@@ -127,7 +127,10 @@ Each Part 3 language folder has its own README with the single-snippet command.
 - Observer participants on the client side (rider/driver apps) are outside this repository.
 - Upstream has no LICENSE file.
 - C++ timings are from a Linux container and are not directly comparable with host timings; they show order of magnitude only.
-- LLM records exist only for runs that were actually performed; rows are added to `data/llm.csv` as members supply outputs.
+- LLM records: 10 real runs (1 Claude Code, 9 ChatGPT free tier). The ChatGPT runs were made from the team lead's computer with the browser
+  driven by Claude Code because members were unavailable; the member named on each file is the topic owner (see `prompts/README.md`).
+- Cancellation is read-then-update (not one atomic conditional update) and acceptance does not re-check `activePayment`; both were
+  raised by the ChatGPT reviews and are left as future work.
 
 ## Folder map
 

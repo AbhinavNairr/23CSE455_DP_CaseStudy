@@ -1,11 +1,12 @@
-# LLM records - how each member creates them
+# LLM records
 
-The course rules say LLM records must be real runs ("Do not submit invented LLM records"). Each file below must be
-pasted by the member it is assigned to, and the answer saved exactly as the model gave it.
+The course rules say LLM records must be real runs ("Do not submit invented LLM records"). Every output file here is
+the actual answer of the model named in `data/llm.csv`, saved unchanged except for Markdown capture (see each file's header).
+
 
 | File | Who runs it | Part | Tool |
 |---|---|---|---|
-| `Dilip_Kumar_Reddy_claude_prompt_01.txt` | Dilip Kumar Reddy (already recorded) | Pattern discovery / application study | Claude Code|
+| `Dilip_Kumar_Reddy_claude_prompt_01.txt` | Dilip Kumar Reddy | Pattern discovery / application study | Claude Code|
 | `Dilip_Kumar_Reddy_prompt_01.txt` | Dilip Kumar Reddy | Pattern discovery | ChatGPT and claude |
 | `Sai_Sameer_prompt_01.txt` | Sai Sameer | Evolution CH01 | ChatGPT and Gemini |
 | `Sai_Sameer_prompt_02.txt` | Sai Sameer | Cross-language Observer | ChatGPT and Gemini |
@@ -16,16 +17,22 @@ pasted by the member it is assigned to, and the answer saved exactly as the mode
 | `S_Leela_Shankar_prompt_01.txt` | S Leela Shankar | Pattern discovery (dataset audit) |ChatGPT|
 | `S_Leela_Shankar_prompt_02.txt` | S Leela Shankar | Cross-language metrics |ChatGPT|
 
-## Steps (about 10 minutes per person)
-1. Open https://chatgpt.com (or https://gemini.google.com) and start a **new chat**.
-2. Open your prompt file, select **all** the text, copy it, paste it into the chat and send it. Do not edit it.
-3. When the answer finishes, click the model's **Copy** button under the answer.
-4. Create `<same name>_output_0N.md` in this folder (for example `Sai_Sameer_output_01.md`) and paste the answer unchanged.
-5. Write down the **model name shown on screen** (for example "ChatGPT - GPT-5 mini") and the **date**, and send both
-   to Dilip with the output file. They go into `data/llm.csv` column `model_and_date`.
 
-The verification files (`*_verification_0N.md`) are written afterwards by checking every claim in the output against the
-source code and test results; the result goes into `data/llm.csv` column `evaluation`
-(correct / partial / incorrect / cannot confirm).
+| Topic owner | Prompt | Part | Verdict | Verification |
+|---|---|---|---|---|
+| Dilip Kumar Reddy | `Dilip_Kumar_Reddy_claude_prompt_01.txt` | Application study / pattern discovery (Claude) | partial | `Dilip_Kumar_Reddy_claude_verification_01.md` |
+| Dilip Kumar Reddy | `Dilip_Kumar_Reddy_prompt_01.txt` | Pattern discovery | partial | `Dilip_Kumar_Reddy_verification_01.md` |
+| Sai Sameer | `Sai_Sameer_prompt_01.txt` | Evolution CH01 | correct (analysis) / partial (design) | `Sai_Sameer_verification_01.md` |
+| Sai Sameer | `Sai_Sameer_prompt_02.txt` | Cross-language Observer | partial | `Sai_Sameer_verification_02.md` + `Sai_Sameer_coderun_02.txt` |
+| M Kumar | `M_Kumar_prompt_01.txt` | Evolution CH02 | partial | `M_Kumar_verification_01.md` |
+| M Kumar | `M_Kumar_prompt_02.txt` | Cross-language State | correct | `M_Kumar_verification_02.md` + `M_Kumar_coderun_02.txt` |
+| K Harish | `K_Harish_prompt_01.txt` | Evolution CH03 | partial | `K_Harish_verification_01.md` |
+| K Harish | `K_Harish_prompt_02.txt` | Cross-language Strategy | partial | `K_Harish_verification_02.md` + `K_Harish_coderun_02.txt` |
+| S Leela Shankar | `S_Leela_Shankar_prompt_01.txt` | Pattern discovery (dataset audit) | correct | `S_Leela_Shankar_verification_01.md` |
+| S Leela Shankar | `S_Leela_Shankar_prompt_02.txt` | Cross-language metrics | correct | `S_Leela_Shankar_verification_02.md` |
 
-`tools/make_prompt_bundles.py` regenerates the prompt files from `Part1/code`, `Part3/test-cases` and `data/`.
+Each topic owner should read their verification file and sign it (see `HUMAN_VERIFICATION.md`).
+
+## Re-running
+`python tools/make_prompt_bundles.py` regenerates the prompt files from `Part1/code`, `Part3/test-cases` and `data/`.
+`python tools/run_llm_code.py prompts/<name>_output_02.md <scratch-dir>` recompiles and reruns the generated code.
