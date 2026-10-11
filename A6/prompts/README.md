@@ -6,15 +6,15 @@ pasted by the member it is assigned to, and the answer saved exactly as the mode
 | File | Who runs it | Part | Tool |
 |---|---|---|---|
 | `Dilip_Kumar_Reddy_claude_prompt_01.txt` | Dilip Kumar Reddy (already recorded) | Pattern discovery / application study | Claude Code session (paid tier, not free) |
-| `Dilip_Kumar_Reddy_prompt_01.txt` | Dilip Kumar Reddy | Pattern discovery | free ChatGPT or Gemini |
-| `Sai_Sameer_prompt_01.txt` | Sai Sameer | Evolution CH01 | free ChatGPT or Gemini |
-| `Sai_Sameer_prompt_02.txt` | Sai Sameer | Cross-language Observer | free ChatGPT or Gemini |
-| `M_Kumar_prompt_01.txt` | M Kumar | Evolution CH02 | free ChatGPT or Gemini |
-| `M_Kumar_prompt_02.txt` | M Kumar | Cross-language State | free ChatGPT or Gemini |
-| `K_Harish_prompt_01.txt` | K Harish | Evolution CH03 | free ChatGPT or Gemini |
-| `K_Harish_prompt_02.txt` | K Harish | Cross-language Strategy | free ChatGPT or Gemini |
-| `S_Leela_Shankar_prompt_01.txt` | S Leela Shankar | Pattern discovery (dataset audit) | free ChatGPT or Gemini |
-| `S_Leela_Shankar_prompt_02.txt` | S Leela Shankar | Cross-language metrics | free ChatGPT or Gemini |
+| `Dilip_Kumar_Reddy_prompt_01.txt` | Dilip Kumar Reddy | Pattern discovery | ChatGPT and claude |
+| `Sai_Sameer_prompt_01.txt` | Sai Sameer | Evolution CH01 | ChatGPT and Gemini |
+| `Sai_Sameer_prompt_02.txt` | Sai Sameer | Cross-language Observer | ChatGPT and Gemini |
+| `M_Kumar_prompt_01.txt` | M Kumar | Evolution CH02 |ChatGPT|
+| `M_Kumar_prompt_02.txt` | M Kumar | Cross-language State | ChatGPT|
+| `K_Harish_prompt_01.txt` | K Harish | Evolution CH03 |ChatGPT|
+| `K_Harish_prompt_02.txt` | K Harish | Cross-language Strategy | ChatGPT|
+| `S_Leela_Shankar_prompt_01.txt` | S Leela Shankar | Pattern discovery (dataset audit) |ChatGPT|
+| `S_Leela_Shankar_prompt_02.txt` | S Leela Shankar | Cross-language metrics |ChatGPT|
 
 ## Steps (about 10 minutes per person)
 1. Open https://chatgpt.com (or https://gemini.google.com) and start a **new chat**.
