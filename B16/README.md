@@ -52,6 +52,7 @@ Paths in the CSVs are relative to this folder:
 | `B16_Report.tex` / `B16_Report.pdf` | the report |
 | `Part3/B16_slide.pdf` (source `Part3/B16_slide.tex`) | short slide deck (placed in Part3 as in the assignment's folder tree) |
 | `B16_dataset.xlsx` | all CSV datasets as sheets (built by `data/build_workbook.py`) |
+| `screenshots/` | GitHub screenshots of the team folder (report section 7) |
 | `data/` | **the one dataset folder:** `patterns.csv`, `pattern_counts.csv` (every version), `cross_language.csv`, `llm.csv`; baseline source `code/`; `test_result/` (test logs + index); generator scripts |
 | `Part1/` | `Part1_prompt.txt`, `llm/` (exact prompts + raw outputs), `evidence/` (verification, line checks), `uml/` (35 diagrams), `architecture/`, `notes.md` |
 | `Part2/` | `code/` (evolved source + demos), `changes/Change1..3/` (requirement, diffs, test logs, demo logs), `pattern_evolution.csv`, `uml/`, `Part2_prompt.txt`, `llm/`, `evidence/` |
