@@ -17,7 +17,7 @@ We studied **OpenWMS**, an open-source warehouse management system written in Ja
 
 If you only have a few minutes, open these in order:
 
-1. **[`report/main.pdf`](report/main.pdf)** — the full case study report (all three parts in one document).
+1. **[`B7_Report.pdf`](B7_Report.pdf)** — the full case study report (all three parts in one document).
 2. **[`report/part1_findings.pdf`](report/part1_findings.pdf)** — Part 1 in detail: which patterns we found and the evidence for each.
 3. **[`report/part2_findings.pdf`](report/part2_findings.pdf)** — Part 2 in detail: the three new features and their tests.
 4. **[`report/part3_findings.pdf`](report/part3_findings.pdf)** — Part 3 in detail: the four-language comparison and its metrics.
@@ -39,11 +39,12 @@ Everything else in this repository is **supporting evidence** (source code, test
 ## Repository map
 
 ```text
-Team_B9_DP/
+B7/
 ├── README.md                     ← you are here
+├── B7_Report.pdf                 ← FULL CASE STUDY REPORT (start here)
+├── B7_Report.tex                 ← LaTeX source for the report
 │
-├── report/                       ← THE REPORTS (start here)
-│   ├── main.pdf                  ← full case study report
+├── report/                       ← per-part detailed reports
 │   ├── part1_findings.pdf        ← Part 1 detailed findings
 │   ├── part2_findings.pdf        ← Part 2 detailed findings
 │   ├── part3_findings.pdf        ← Part 3 detailed findings

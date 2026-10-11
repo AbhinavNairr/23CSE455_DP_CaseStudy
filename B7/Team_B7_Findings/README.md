@@ -4,7 +4,7 @@ This directory contains the collected Part 1 findings, Part 2 change evidence an
 
 ## Report
 
-- The report sources and compiled PDFs are in the repository-level `report/` folder: `main.tex` (full case-study report) and `part1_findings.tex`, `part2_findings.tex`, `part3_findings.tex` (per-part findings), each with its PDF.
+- The report sources and compiled PDFs are in the parent folder: `B7_Report.tex` (full case-study report, at the top level) and, inside `report/`, `part1_findings.tex`, `part2_findings.tex`, `part3_findings.tex` (per-part findings), each with its PDF.
 - The `report/casestudy.tex` draft and `screenshots/` folder listed in `COPY_MANIFEST.md` were not included when this folder was published.
 
 ## Part 1
