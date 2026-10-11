@@ -87,5 +87,5 @@ The four dataset CSVs are kept once, in `data/`, as the instructions require ("D
 ## Use of AI
 All AI use is recorded in `data/llm.csv`, with the prompt, input, raw output, evaluation and verification file for each step.
 - **Parts 1 and 3:** analysis prompts and the Part 3 Observer and Composite programs came from Claude Opus 5.5 on claude.ai. The other eight Part 3 problems (32 programs) were written by Claude Code.
-- **Part 2:** the code for the three changes, the tests, the demos, the measurement scripts and the draft of this report were produced with Claude Code (Claude Opus 5.5), following plans I approved.
+- **Part 2:** the code for the three changes, the tests, the demos and the measurement scripts were produced with Claude Code (Claude Opus 5.5), following plans I approved.
 - **Checking:** every claim was checked against source, tests or measurements, as recorded in `Part1/evidence/verification.csv`, `Part2/evidence/verification.csv` and `Part3/llm/verification.csv`.
