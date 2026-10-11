@@ -5,7 +5,7 @@ pasted by the member it is assigned to, and the answer saved exactly as the mode
 
 | File | Who runs it | Part | Tool |
 |---|---|---|---|
-| `Dilip_Kumar_Reddy_claude_prompt_01.txt` | Dilip Kumar Reddy (already recorded) | Pattern discovery / application study | Claude Code session (paid tier, not free) |
+| `Dilip_Kumar_Reddy_claude_prompt_01.txt` | Dilip Kumar Reddy (already recorded) | Pattern discovery / application study | Claude Code|
 | `Dilip_Kumar_Reddy_prompt_01.txt` | Dilip Kumar Reddy | Pattern discovery | ChatGPT and claude |
 | `Sai_Sameer_prompt_01.txt` | Sai Sameer | Evolution CH01 | ChatGPT and Gemini |
 | `Sai_Sameer_prompt_02.txt` | Sai Sameer | Cross-language Observer | ChatGPT and Gemini |
