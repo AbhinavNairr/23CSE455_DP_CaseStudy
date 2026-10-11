@@ -621,48 +621,50 @@ JavaScript & 102.0 & 70--151 & 5--17 & 91.4--93.2\\
 C++ & 142.1 & 110--236 & 6--24 & 4.8--5.9\\
 \bottomrule\end{tabular}
 
+Per program (one test log each in \path{Part3/evidence/test_results/}, e.g.\ \path{Observer_Java.txt}, \path{TemplateMethod_Cpp.txt}):
+
 \begin{longtable}{@{}llrrlr@{}}\toprule
-Pattern & Language & Source LOC & Max function CC & Tests & Median ms\\\midrule\endhead
-Observer & Java & 211 & 7 & 3/3 passed (Part3/evidence/test\_results/Observer\_Java.txt) & 36.0\\
-Observer & Python & 125 & 8 & 3/3 passed (Part3/evidence/test\_results/Observer\_Python.txt) & 21.8\\
-Observer & JavaScript & 151 & 8 & 3/3 passed (Part3/evidence/test\_results/Observer\_JavaScript.txt) & 93.2\\
-Observer & C++ & 236 & 10 & 3/3 passed (Part3/evidence/test\_results/Observer\_Cpp.txt) & 5.1\\
-Composite & Java & 228 & 22 & 3/3 passed (Part3/evidence/test\_results/Composite\_Java.txt) & 34.0\\
-Composite & Python & 141 & 22 & 3/3 passed (Part3/evidence/test\_results/Composite\_Python.txt) & 21.7\\
-Composite & JavaScript & 135 & 17 & 3/3 passed (Part3/evidence/test\_results/Composite\_JavaScript.txt) & 92.2\\
-Composite & C++ & 207 & 24 & 3/3 passed (Part3/evidence/test\_results/Composite\_Cpp.txt) & 5.1\\
-Strategy & Java & 104 & 6 & 3/3 passed (Part3/evidence/test\_results/Strategy\_Java.txt) & 32.8\\
-Strategy & Python & 77 & 7 & 3/3 passed (Part3/evidence/test\_results/Strategy\_Python.txt) & 21.2\\
-Strategy & JavaScript & 108 & 5 & 3/3 passed (Part3/evidence/test\_results/Strategy\_JavaScript.txt) & 92.8\\
-Strategy & C++ & 122 & 7 & 3/3 passed (Part3/evidence/test\_results/Strategy\_Cpp.txt) & 5.1\\
-Adapter & Java & 128 & 10 & 3/3 passed (Part3/evidence/test\_results/Adapter\_Java.txt) & 33.6\\
-Adapter & Python & 82 & 10 & 3/3 passed (Part3/evidence/test\_results/Adapter\_Python.txt) & 21.1\\
-Adapter & JavaScript & 97 & 9 & 3/3 passed (Part3/evidence/test\_results/Adapter\_JavaScript.txt) & 92.4\\
-Adapter & C++ & 124 & 12 & 3/3 passed (Part3/evidence/test\_results/Adapter\_Cpp.txt) & 5.9\\
-Decorator & Java & 128 & 7 & 3/3 passed (Part3/evidence/test\_results/Decorator\_Java.txt) & 34.9\\
-Decorator & Python & 88 & 7 & 3/3 passed (Part3/evidence/test\_results/Decorator\_Python.txt) & 21.2\\
-Decorator & JavaScript & 98 & 6 & 3/3 passed (Part3/evidence/test\_results/Decorator\_JavaScript.txt) & 92.7\\
-Decorator & C++ & 132 & 7 & 3/3 passed (Part3/evidence/test\_results/Decorator\_Cpp.txt) & 5.0\\
-Template Method & Java & 113 & 6 & 3/3 passed (Part3/evidence/test\_results/TemplateMethod\_Java.txt) & 36.8\\
-Template Method & Python & 70 & 6 & 3/3 passed (Part3/evidence/test\_results/TemplateMethod\_Python.txt) & 21.5\\
-Template Method & JavaScript & 96 & 5 & 3/3 passed (Part3/evidence/test\_results/TemplateMethod\_JavaScript.txt) & 92.3\\
-Template Method & C++ & 114 & 6 & 3/3 passed (Part3/evidence/test\_results/TemplateMethod\_Cpp.txt) & 5.1\\
-Command & Java & 104 & 11 & 3/3 passed (Part3/evidence/test\_results/Command\_Java.txt) & 34.2\\
-Command & Python & 69 & 10 & 3/3 passed (Part3/evidence/test\_results/Command\_Python.txt) & 21.2\\
-Command & JavaScript & 83 & 10 & 3/3 passed (Part3/evidence/test\_results/Command\_JavaScript.txt) & 92.6\\
-Command & C++ & 120 & 12 & 3/3 passed (Part3/evidence/test\_results/Command\_Cpp.txt) & 5.6\\
-Null Object & Java & 98 & 6 & 3/3 passed (Part3/evidence/test\_results/NullObject\_Java.txt) & 32.1\\
-Null Object & Python & 57 & 6 & 3/3 passed (Part3/evidence/test\_results/NullObject\_Python.txt) & 21.0\\
-Null Object & JavaScript & 70 & 5 & 3/3 passed (Part3/evidence/test\_results/NullObject\_JavaScript.txt) & 91.7\\
-Null Object & C++ & 110 & 6 & 3/3 passed (Part3/evidence/test\_results/NullObject\_Cpp.txt) & 5.4\\
-Chain of Responsibility & Java & 142 & 10 & 3/3 passed (Part3/evidence/test\_results/ChainofResponsibility\_Java.txt) & 32.0\\
-Chain of Responsibility & Python & 82 & 9 & 3/3 passed (Part3/evidence/test\_results/ChainofResponsibility\_Python.txt) & 21.5\\
-Chain of Responsibility & JavaScript & 87 & 9 & 3/3 passed (Part3/evidence/test\_results/ChainofResponsibility\_JavaScript.txt) & 91.4\\
-Chain of Responsibility & C++ & 128 & 10 & 3/3 passed (Part3/evidence/test\_results/ChainofResponsibility\_Cpp.txt) & 5.6\\
-Factory Method & Java & 124 & 6 & 3/3 passed (Part3/evidence/test\_results/FactoryMethod\_Java.txt) & 34.4\\
-Factory Method & Python & 74 & 6 & 3/3 passed (Part3/evidence/test\_results/FactoryMethod\_Python.txt) & 21.5\\
-Factory Method & JavaScript & 95 & 5 & 3/3 passed (Part3/evidence/test\_results/FactoryMethod\_JavaScript.txt) & 92.8\\
-Factory Method & C++ & 128 & 6 & 3/3 passed (Part3/evidence/test\_results/FactoryMethod\_Cpp.txt) & 4.8\\
+Pattern & Language & Source LOC & Max function CC & Tests passed & Median ms\\\midrule\endhead
+Observer & Java & 211 & 7 & 3/3 passed & 36.0\\
+Observer & Python & 125 & 8 & 3/3 passed & 21.8\\
+Observer & JavaScript & 151 & 8 & 3/3 passed & 93.2\\
+Observer & C++ & 236 & 10 & 3/3 passed & 5.1\\
+Composite & Java & 228 & 22 & 3/3 passed & 34.0\\
+Composite & Python & 141 & 22 & 3/3 passed & 21.7\\
+Composite & JavaScript & 135 & 17 & 3/3 passed & 92.2\\
+Composite & C++ & 207 & 24 & 3/3 passed & 5.1\\
+Strategy & Java & 104 & 6 & 3/3 passed & 32.8\\
+Strategy & Python & 77 & 7 & 3/3 passed & 21.2\\
+Strategy & JavaScript & 108 & 5 & 3/3 passed & 92.8\\
+Strategy & C++ & 122 & 7 & 3/3 passed & 5.1\\
+Adapter & Java & 128 & 10 & 3/3 passed & 33.6\\
+Adapter & Python & 82 & 10 & 3/3 passed & 21.1\\
+Adapter & JavaScript & 97 & 9 & 3/3 passed & 92.4\\
+Adapter & C++ & 124 & 12 & 3/3 passed & 5.9\\
+Decorator & Java & 128 & 7 & 3/3 passed & 34.9\\
+Decorator & Python & 88 & 7 & 3/3 passed & 21.2\\
+Decorator & JavaScript & 98 & 6 & 3/3 passed & 92.7\\
+Decorator & C++ & 132 & 7 & 3/3 passed & 5.0\\
+Template Method & Java & 113 & 6 & 3/3 passed & 36.8\\
+Template Method & Python & 70 & 6 & 3/3 passed & 21.5\\
+Template Method & JavaScript & 96 & 5 & 3/3 passed & 92.3\\
+Template Method & C++ & 114 & 6 & 3/3 passed & 5.1\\
+Command & Java & 104 & 11 & 3/3 passed & 34.2\\
+Command & Python & 69 & 10 & 3/3 passed & 21.2\\
+Command & JavaScript & 83 & 10 & 3/3 passed & 92.6\\
+Command & C++ & 120 & 12 & 3/3 passed & 5.6\\
+Null Object & Java & 98 & 6 & 3/3 passed & 32.1\\
+Null Object & Python & 57 & 6 & 3/3 passed & 21.0\\
+Null Object & JavaScript & 70 & 5 & 3/3 passed & 91.7\\
+Null Object & C++ & 110 & 6 & 3/3 passed & 5.4\\
+Chain of Responsibility & Java & 142 & 10 & 3/3 passed & 32.0\\
+Chain of Responsibility & Python & 82 & 9 & 3/3 passed & 21.5\\
+Chain of Responsibility & JavaScript & 87 & 9 & 3/3 passed & 91.4\\
+Chain of Responsibility & C++ & 128 & 10 & 3/3 passed & 5.6\\
+Factory Method & Java & 124 & 6 & 3/3 passed & 34.4\\
+Factory Method & Python & 74 & 6 & 3/3 passed & 21.5\\
+Factory Method & JavaScript & 95 & 5 & 3/3 passed & 92.8\\
+Factory Method & C++ & 128 & 6 & 3/3 passed & 4.8\\
 \bottomrule\end{longtable}
 
 \entry{Comparison}The participants are the same in every language, but the languages express them differently. \emph{Contracts}: Java and C++ state them in the type system (Java \texttt{interface}s, records and a \texttt{final} template method; C++ pure virtual functions, \texttt{final} classes and a non-virtual \texttt{execute}), so a missing or wrong override fails at compile time. Python uses \texttt{abc.ABC} where every method is required (Strategy, Decorator, Template Method, Command, Chain of Responsibility, Composite, Factory Method) and plain base classes where callbacks are optional (Observer, Adapter, Null Object); missing methods are found at run time, when an object is created or called. JavaScript has neither interfaces nor abstract classes: abstract base classes (Strategy, Template Method, Composite, Factory Method) block \texttt{new} with \texttt{new.target} and throw from unimplemented methods, and the tests pass plain objects as strategies and listeners (duck typing). \emph{Template Method}: only Java (\texttt{final}) and C++ (non-virtual) can prevent overriding the skeleton; in Python and JavaScript it is a convention. \emph{Null Object}: in C++ the runner holds a reference, which cannot be null, so the language itself removes the null check; elsewhere a shared no-op object replaces \texttt{null}/\texttt{None}. \emph{Chain of Responsibility}: all four pass each handler a \texttt{proceed} callback (Java \texttt{Supplier}, Python lambda, JavaScript arrow function, C++ \texttt{std::function}) instead of a fixed \texttt{next} field, so handlers can be reordered; JUnit continues its chain through \texttt{Invocation.proceed()}. \emph{Decorator}: every wrapper holds the inner invocation and calls its \texttt{proceed()}, so wrappers nest in any order. \emph{Ownership} is explicit only in C++: decorators, commands and factory products are held in \texttt{std::unique\_ptr}, so building or destroying the outer object moves or frees the whole structure, while the other three rely on garbage collection. All Composite versions use the ``safe'' form (\texttt{addChild} only on containers), whereas JUnit's \texttt{TestDescriptor} is ``transparent''. Python is the shortest version for 9 of the 10 problems (JavaScript for Composite), and C++ or Java the longest, mostly because of type declarations, headers and explicit ownership. The highest complexity is in input parsing and event dispatch (Composite parsers CCN 17--24; Observer, Adapter, Command and Chain parsers 7--12), not in the pattern classes. lizard failed to parse one JavaScript file (a template literal nested inside another one); that line was rewritten without nesting and re-measured (\path{Part3/llm/verification.csv}, P3-16).
@@ -672,38 +674,44 @@ Factory Method & C++ & 128 & 6 & 3/3 passed (Part3/evidence/test\_results/Factor
 \section{LLM records and human verification}
 \entry{Run and model}Claude Opus 5.5 on claude.ai (Claude Code on the web), 2026-10-10, for the analysis prompts of Parts 1--3 and the Observer and Composite programs of Part~3; Claude Code CLI (Claude Opus 5.5) on my Mac for implementing the three Part~2 changes, the other eight Part~3 problems, the measurement and verification scripts and the draft of this report, following plans I approved. Every interaction is a row in \path{data/llm.csv} (prompts combined per part in \path{Part1/Part1_prompt.txt}, \path{Part2/Part2_prompt.txt}, \path{Part3/llm/part3_prompt.txt}).
 
-\begin{longtable}{@{}p{0.40\linewidth}p{0.16\linewidth}p{0.24\linewidth}p{0.11\linewidth}@{}}\toprule
-Part and step & Tool & Exact prompt & Evaluation\\\midrule\endhead
-Part 1 - pattern discovery: prompt 1: map files and flow per area & claude.ai (Claude Code on the web) & \path{Part1/llm/prompt_1_files.txt} & correct\\
-Part 1 - pattern discovery: prompt 2: simple explanation of the Area A flow & claude.ai (Claude Code on the web) & \path{Part1/llm/prompt_2_areaA_flow.txt} & correct\\
-Part 1 - pattern discovery: prompt 3: patterns in Area A & claude.ai (Claude Code on the web) & \path{Part1/llm/prompt_3_areaA_patterns.txt} & partially correct\\
-Part 1 - pattern discovery: prompt 4: simple explanation of the Area B flow & claude.ai (Claude Code on the web) & \path{Part1/llm/prompt_4_areaB_flow.txt} & partially correct\\
-Part 1 - pattern discovery: prompt 4b: follow-up challenging step 7 of prompt 4 & claude.ai (Claude Code on the web) & \path{Part1/llm/prompt_4b_correction.txt} & correct\\
-Part 1 - pattern discovery: prompt 5: patterns in Area B & claude.ai (Claude Code on the web) & \path{Part1/llm/prompt_5_areaB_patterns.txt} & correct\\
-Part 1 - pattern discovery: prompt 6: simple explanation of the Area C flow & claude.ai (Claude Code on the web) & \path{Part1/llm/prompt_6_areaC_flow.txt} & correct\\
-Part 1 - pattern discovery: prompt 7: patterns in Area C & claude.ai (Claude Code on the web) & \path{Part1/llm/prompt_7_areaC_patterns.txt} & correct\\
-Part 1 - pattern discovery: prompt 8: simple explanation of the Area D flow & claude.ai (Claude Code on the web) & \path{Part1/llm/prompt_8_areaD_flow.txt} & correct\\
-Part 1 - pattern discovery: prompt 9: patterns in Area D & claude.ai (Claude Code on the web) & \path{Part1/llm/prompt_9_areaD_patterns.txt} & correct\\
-Part 1 - pattern discovery: UML (prompt 10: PlantUML class diagram per confirmed instance) & claude.ai (Claude Code on the web) & \path{Part1/llm/prompt_10_uml.txt} & partially correct\\
-Part 1 - pattern discovery: architecture (prompt 11: PlantUML component diagram of one test run) & claude.ai (Claude Code on the web) & \path{Part1/llm/prompt_11_architecture.txt} & partially correct\\
-Part 2 - evolution: change design (prompt 1: existing features, gap, design, extension point, order/failures, pattern impact, refactoring for CH01-CH03) & claude.ai (Claude Code on the web) & \path{Part2/llm/prompt_1_design.txt} & partially correct\\
-Part 2 - evolution: CH03 implementation (refactoring + FilterPolicy + tests + demo) & Claude Code CLI & \path{Part2/llm/prompt_2_ch03_impl.txt} & correct after review\\
-Part 2 - evolution: CH01 implementation (refactoring + ClassSummaryListener + tests + demo) & Claude Code CLI & \path{Part2/llm/prompt_3_ch01_impl.txt} & correct after review\\
-Part 2 - evolution: CH02 implementation (@ManagedResource extension + tests + demo) & Claude Code CLI & \path{Part2/llm/prompt_4_ch02_impl.txt} & correct after review\\
-Part 3 - cross-language analysis: prompt 1 (Observer and Composite programs in Java, Python, JavaScript, C++) & claude.ai (Claude Code on the web) & \path{Part3/llm/prompt_1_programs.txt} & correct, with 1 partial and 1 not confirmable\\
-Part 3 - cross-language analysis: remaining 8 pattern types (Strategy, Adapter, Decorator, Template Method, Command, Null Object, Chain of Responsibility, Factory Method) in Java, Python, JavaScript and C++ & Claude Code CLI & \path{Part3/llm/prompt_2_eight_patterns.txt} & correct after review\\
-Part 3 - cross-language analysis: reporting and tooling for all parts (report draft, slides, dataset workbook, README, dataset generators, measurement and verification scripts) & Claude Code CLI & \path{data/prompt_reporting_with_claude_code.txt} & correct after review\\
-\bottomrule\end{longtable}
+{\small\renewcommand{\UrlBreaks}{\do\/\do\_}%
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.34\linewidth}>{\raggedright\arraybackslash}p{0.15\linewidth}>{\raggedright\arraybackslash}p{0.30\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}@{}}\toprule
+Step & Tool & Exact prompt & Evaluation\\\midrule\endhead
+\multicolumn{4}{@{}l}{\textbf{Part 1 -- pattern discovery} (prompts in \path{Part1/llm/})}\\
+Prompt 1: map files and flow per area & claude.ai (Claude Code on the web) & \path{prompt_1_files.txt} & correct\\
+Prompt 2: simple explanation of the Area A flow & claude.ai (Claude Code on the web) & \path{prompt_2_areaA_flow.txt} & correct\\
+Prompt 3: patterns in Area A & claude.ai (Claude Code on the web) & \path{prompt_3_areaA_patterns.txt} & partially correct\\
+Prompt 4: simple explanation of the Area B flow & claude.ai (Claude Code on the web) & \path{prompt_4_areaB_flow.txt} & partially correct\\
+Prompt 4b: follow-up challenging step 7 of prompt 4 & claude.ai (Claude Code on the web) & \path{prompt_4b_correction.txt} & correct\\
+Prompt 5: patterns in Area B & claude.ai (Claude Code on the web) & \path{prompt_5_areaB_patterns.txt} & correct\\
+Prompt 6: simple explanation of the Area C flow & claude.ai (Claude Code on the web) & \path{prompt_6_areaC_flow.txt} & correct\\
+Prompt 7: patterns in Area C & claude.ai (Claude Code on the web) & \path{prompt_7_areaC_patterns.txt} & correct\\
+Prompt 8: simple explanation of the Area D flow & claude.ai (Claude Code on the web) & \path{prompt_8_areaD_flow.txt} & correct\\
+Prompt 9: patterns in Area D & claude.ai (Claude Code on the web) & \path{prompt_9_areaD_patterns.txt} & correct\\
+UML (prompt 10: PlantUML class diagram per confirmed instance) & claude.ai (Claude Code on the web) & \path{prompt_10_uml.txt} & partially correct\\
+Architecture (prompt 11: PlantUML component diagram of one test run) & claude.ai (Claude Code on the web) & \path{prompt_11_architecture.txt} & partially correct\\
+\addlinespace
+\multicolumn{4}{@{}l}{\textbf{Part 2 -- evolution} (prompts in \path{Part2/llm/})}\\
+Change design (prompt 1: existing features, gap, design, extension point, order/failures, pattern impact, refactoring for CH01-CH03) & claude.ai (Claude Code on the web) & \path{prompt_1_design.txt} & partially correct\\
+CH03 implementation (refactoring + FilterPolicy + tests + demo) & Claude Code CLI & \path{prompt_2_ch03_impl.txt} & correct after review\\
+CH01 implementation (refactoring + ClassSummaryListener + tests + demo) & Claude Code CLI & \path{prompt_3_ch01_impl.txt} & correct after review\\
+CH02 implementation (@ManagedResource extension + tests + demo) & Claude Code CLI & \path{prompt_4_ch02_impl.txt} & correct after review\\
+\addlinespace
+\multicolumn{4}{@{}l}{\textbf{Part 3 -- cross-language analysis} (prompts in \path{Part3/llm/})}\\
+Prompt 1 (Observer and Composite programs in Java, Python, JavaScript, C++) & claude.ai (Claude Code on the web) & \path{prompt_1_programs.txt} & correct, with 1 partial and 1 not confirmable\\
+Remaining 8 pattern types (Strategy, Adapter, Decorator, Template Method, Command, Null Object, Chain of Responsibility, Factory Method) in Java, Python, JavaScript and C++ & Claude Code CLI & \path{prompt_2_eight_patterns.txt} & correct after review\\
+Reporting and tooling for all parts (report draft, slides, dataset workbook, README, dataset generators, measurement and verification scripts) & Claude Code CLI & \path{data/prompt_reporting_with_claude_code.txt} & correct after review\\
+\bottomrule\end{longtable}}
 
 \entry{Inputs and outputs}Input for all analysis prompts: JUnit at commit \texttt{f59f60d} (the four modules) and my own earlier findings; raw outputs are saved unchanged next to each prompt (\path{Part1/llm/output_*.md}, \path{Part2/llm/output_1_design.md}, \path{Part3/llm/output_1_programs.zip}).
 
 \entry{Claims and evaluation}Every claim was checked against the source, tests or measurements (scripts and code reading, recorded per row with file and line evidence); the \texttt{checked\_by} column names the person who re-checked a row by hand.
 
-\begin{tabular}{@{}lrrrrr@{}}\toprule
-Verification file & Claims & Correct & Partially & Incorrect & Cannot confirm\\\midrule
-Part 1 & 102 & 93 & 6 & 2 & 1\\
-Part 2 & 22 & 15 & 5 & 2 & 0\\
-Part 3 & 16 & 13 & 2 & 0 & 1\\
+\begin{tabular}{@{}lrrrrrr@{}}\toprule
+Verification file & Claims & Correct & Partially & Incorrect & Cannot confirm & Re-checked by hand\\\midrule
+Part 1 & 102 & 93 & 6 & 2 & 1 & 8\\
+Part 2 & 22 & 15 & 5 & 2 & 0 & 5\\
+Part 3 & 16 & 13 & 2 & 0 & 1 & 5\\
 \bottomrule\end{tabular}
 
 Examples of corrections: the LLM claimed no test instance is created for a \texttt{@Disabled} method (wrong: \texttt{prepare()} runs before \texttt{checkWhetherSkipped}); its architecture diagram had the client call the launcher from the request builder and the orchestrator build the \texttt{TestPlan} (both corrected); its UML for A2 included \texttt{EngineFilter} (removed); in Part~2 it proposed a non-existent enum Strategy, a Long Method that metrics do not support, and called the CH02 \texttt{Holder} ``not a pattern''.
@@ -737,11 +745,16 @@ B16/
   Part2/  code/ (evolved source + demo/), changes/ (Change1..3/,
           b16-evolution.bundle), pattern_evolution.csv, uml/,
           Part2_prompt.txt, llm/, evidence/
-  Part3/  observer-test-listeners/, composite-test-tree/
-          (java, python, javascript, cpp, test-data),
+  Part3/  README.md, one folder per pattern type (10):
+          observer-test-listeners/, composite-test-tree/,
+          strategy-test-filters/, adapter-listener-bridge/,
+          decorator-timeout-invocation/, template-method-engine/,
+          command-task-queue/, null-object-listener/,
+          chain-of-responsibility-interceptors/, factory-method-executors/
+          (each: java, python, javascript, cpp, test-data),
           llm/ (part3_prompt.txt, raw output, verification),
-          evidence/test_results/, run logs, timing-raw.csv, lizard-raw.txt,
-          B16_slide.tex, B16_slide.pdf
+          evidence/test_results/, run-all.sh, run logs, measure.py,
+          timing-raw.csv, lizard-raw.txt, B16_slide.tex, B16_slide.pdf
 \end{verbatim}
 
 \appendix

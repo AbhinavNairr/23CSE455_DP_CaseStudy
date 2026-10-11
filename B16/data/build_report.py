@@ -152,7 +152,7 @@ def cross_table():
     rows = []
     for r in read("data/cross_language.csv"):
         rows.append(f"{esc(r['pattern_name'])} & {esc(r['language'])} & {r['source_loc']} & {r['max_function_cc']} & "
-                    f"{esc(r['test_result'])} & {r['median_process_ms']}\\\\")
+                    f"{esc(r['test_result'].split(' (')[0])} & {r['median_process_ms']}\\\\")  # log path stated above the table
     return "\n".join(rows)
 
 
@@ -170,11 +170,19 @@ def cross_summary():
 
 
 def llm_table():
-    rows = []
+    rows, group = [], None
     for r in read("data/llm.csv"):
+        part, step = r["part"].split(": ", 1)  # "Part 1 - pattern discovery", "prompt 4: ..."
+        folder, name = r["prompt_file"].rsplit("/", 1)
+        if part != group:
+            first, group, home = group is None, part, folder
+            rows.append(("" if first else "\\addlinespace\n") +
+                        f"\\multicolumn{{4}}{{@{{}}l}}{{\\textbf{{{esc(part.replace(' - ', ' -- '))}}} "
+                        f"(prompts in {path(folder + '/')})}}\\\\")
         verdict = r["evaluation"].split(":")[0]
         tool = "Claude Code CLI" if "CLI" in r["model_and_date"] else "claude.ai (Claude Code on the web)"
-        rows.append(f"{esc(r['part'])} & {esc(tool)} & {path(r['prompt_file'])} & {esc(verdict)}\\\\")
+        prompt = path(name if folder == home else r["prompt_file"])
+        rows.append(f"{esc(step[0].upper() + step[1:])} & {tool} & {prompt} & {esc(verdict)}\\\\")
     return "\n".join(rows)
 
 
@@ -185,7 +193,8 @@ def verification_counts():
         rs = read(p)
         c = lambda pred: sum(1 for r in rs if pred(r["verdict"]))  # noqa: E731
         rows.append(f"{label} & {len(rs)} & {c(lambda v: v == 'correct')} & {c(lambda v: v == 'partially correct')} & "
-                    f"{c(lambda v: v.startswith('incorrect'))} & {c(lambda v: v == 'cannot confirm')}\\\\")
+                    f"{c(lambda v: v.startswith('incorrect'))} & {c(lambda v: v == 'cannot confirm')} & "
+                    f"{sum(1 for r in rs if r['checked_by'].strip())}\\\\")
     return "\n".join(rows)
 
 

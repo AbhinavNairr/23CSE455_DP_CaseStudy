@@ -148,8 +148,10 @@ Language & Mean source LOC & LOC range & Max CC range & Median ms range\\\midrul
 %%CROSSSUMMARY%%
 \bottomrule\end{tabular}
 
+Per program (one test log each in \path{Part3/evidence/test_results/}, e.g.\ \path{Observer_Java.txt}, \path{TemplateMethod_Cpp.txt}):
+
 \begin{longtable}{@{}llrrlr@{}}\toprule
-Pattern & Language & Source LOC & Max function CC & Tests & Median ms\\\midrule\endhead
+Pattern & Language & Source LOC & Max function CC & Tests passed & Median ms\\\midrule\endhead
 %%CROSS%%
 \bottomrule\end{longtable}
 
@@ -160,17 +162,18 @@ Pattern & Language & Source LOC & Max function CC & Tests & Median ms\\\midrule\
 \section{LLM records and human verification}
 \entry{Run and model}Claude Opus 5.5 on claude.ai (Claude Code on the web), 2026-10-10, for the analysis prompts of Parts 1--3 and the Observer and Composite programs of Part~3; Claude Code CLI (Claude Opus 5.5) on my Mac for implementing the three Part~2 changes, the other eight Part~3 problems, the measurement and verification scripts and the draft of this report, following plans I approved. Every interaction is a row in \path{data/llm.csv} (prompts combined per part in \path{Part1/Part1_prompt.txt}, \path{Part2/Part2_prompt.txt}, \path{Part3/llm/part3_prompt.txt}).
 
-\begin{longtable}{@{}p{0.40\linewidth}p{0.16\linewidth}p{0.24\linewidth}p{0.11\linewidth}@{}}\toprule
-Part and step & Tool & Exact prompt & Evaluation\\\midrule\endhead
+{\small\renewcommand{\UrlBreaks}{\do\/\do\_}%
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.34\linewidth}>{\raggedright\arraybackslash}p{0.15\linewidth}>{\raggedright\arraybackslash}p{0.30\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}@{}}\toprule
+Step & Tool & Exact prompt & Evaluation\\\midrule\endhead
 %%LLM%%
-\bottomrule\end{longtable}
+\bottomrule\end{longtable}}
 
 \entry{Inputs and outputs}Input for all analysis prompts: JUnit at commit \texttt{f59f60d} (the four modules) and my own earlier findings; raw outputs are saved unchanged next to each prompt (\path{Part1/llm/output_*.md}, \path{Part2/llm/output_1_design.md}, \path{Part3/llm/output_1_programs.zip}).
 
 \entry{Claims and evaluation}Every claim was checked against the source, tests or measurements (scripts and code reading, recorded per row with file and line evidence); the \texttt{checked\_by} column names the person who re-checked a row by hand.
 
-\begin{tabular}{@{}lrrrrr@{}}\toprule
-Verification file & Claims & Correct & Partially & Incorrect & Cannot confirm\\\midrule
+\begin{tabular}{@{}lrrrrrr@{}}\toprule
+Verification file & Claims & Correct & Partially & Incorrect & Cannot confirm & Re-checked by hand\\\midrule
 %%VERIFY%%
 \bottomrule\end{tabular}
 
@@ -205,11 +208,16 @@ B16/
   Part2/  code/ (evolved source + demo/), changes/ (Change1..3/,
           b16-evolution.bundle), pattern_evolution.csv, uml/,
           Part2_prompt.txt, llm/, evidence/
-  Part3/  observer-test-listeners/, composite-test-tree/
-          (java, python, javascript, cpp, test-data),
+  Part3/  README.md, one folder per pattern type (10):
+          observer-test-listeners/, composite-test-tree/,
+          strategy-test-filters/, adapter-listener-bridge/,
+          decorator-timeout-invocation/, template-method-engine/,
+          command-task-queue/, null-object-listener/,
+          chain-of-responsibility-interceptors/, factory-method-executors/
+          (each: java, python, javascript, cpp, test-data),
           llm/ (part3_prompt.txt, raw output, verification),
-          evidence/test_results/, run logs, timing-raw.csv, lizard-raw.txt,
-          B16_slide.tex, B16_slide.pdf
+          evidence/test_results/, run-all.sh, run logs, measure.py,
+          timing-raw.csv, lizard-raw.txt, B16_slide.tex, B16_slide.pdf
 \end{verbatim}
 
 \appendix
