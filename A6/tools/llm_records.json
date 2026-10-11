@@ -1,0 +1,92 @@
+[
+  {
+    "part": "Pattern discovery (application study)",
+    "model_and_date": "Claude Opus 5.5 (claude-opus-5-5) in Claude Code desktop app, paid tier, 2026-10-11",
+    "prompt_file": "prompts/Dilip_Kumar_Reddy_claude_prompt_01.txt",
+    "input_file": "Part1/code",
+    "output_file": "prompts/Dilip_Kumar_Reddy_claude_output_01.md",
+    "evaluation": "Partially correct: Repository, DI, Singleton, Adapter (Socket.IO, Stripe), Observer, Chain of Responsibility, Data Mapper and Layered Architecture were confirmed; Twilio/Cloudinary adapters are unused or out of scope; Gateway and catchAsync Decorator were missed; ON_TRIP proposal was replaced by SUSPENDED.",
+    "verification_file": "prompts/Dilip_Kumar_Reddy_claude_verification_01.md"
+  },
+  {
+    "part": "Pattern discovery",
+    "model_and_date": "TO FILL: model shown on screen, date",
+    "prompt_file": "prompts/Dilip_Kumar_Reddy_prompt_01.txt",
+    "input_file": "Part1/code/src (excerpts embedded in the prompt)",
+    "output_file": "prompts/Dilip_Kumar_Reddy_output_01.md",
+    "evaluation": "TO FILL after verification",
+    "verification_file": "prompts/Dilip_Kumar_Reddy_verification_01.md"
+  },
+  {
+    "part": "Evolution CH01 (new driver status)",
+    "model_and_date": "TO FILL",
+    "prompt_file": "prompts/Sai_Sameer_prompt_01.txt",
+    "input_file": "Part1/code/src (excerpts embedded in the prompt)",
+    "output_file": "prompts/Sai_Sameer_output_01.md",
+    "evaluation": "TO FILL after verification",
+    "verification_file": "prompts/Sai_Sameer_verification_01.md"
+  },
+  {
+    "part": "Cross-language analysis (Observer)",
+    "model_and_date": "TO FILL",
+    "prompt_file": "prompts/Sai_Sameer_prompt_02.txt",
+    "input_file": "Part3/test-cases/observer_spec.md",
+    "output_file": "prompts/Sai_Sameer_output_02.md",
+    "evaluation": "TO FILL after verification",
+    "verification_file": "prompts/Sai_Sameer_verification_02.md"
+  },
+  {
+    "part": "Evolution CH02 (ride cancellation)",
+    "model_and_date": "TO FILL",
+    "prompt_file": "prompts/M_Kumar_prompt_01.txt",
+    "input_file": "Part1/code/src (excerpts embedded in the prompt)",
+    "output_file": "prompts/M_Kumar_output_01.md",
+    "evaluation": "TO FILL after verification",
+    "verification_file": "prompts/M_Kumar_verification_01.md"
+  },
+  {
+    "part": "Cross-language analysis (State)",
+    "model_and_date": "TO FILL",
+    "prompt_file": "prompts/M_Kumar_prompt_02.txt",
+    "input_file": "Part3/test-cases/state_spec.md",
+    "output_file": "prompts/M_Kumar_output_02.md",
+    "evaluation": "TO FILL after verification",
+    "verification_file": "prompts/M_Kumar_verification_02.md"
+  },
+  {
+    "part": "Evolution CH03 (ride types and dynamic pricing)",
+    "model_and_date": "TO FILL",
+    "prompt_file": "prompts/K_Harish_prompt_01.txt",
+    "input_file": "Part1/code/src (excerpts embedded in the prompt)",
+    "output_file": "prompts/K_Harish_output_01.md",
+    "evaluation": "TO FILL after verification",
+    "verification_file": "prompts/K_Harish_verification_01.md"
+  },
+  {
+    "part": "Cross-language analysis (Strategy)",
+    "model_and_date": "TO FILL",
+    "prompt_file": "prompts/K_Harish_prompt_02.txt",
+    "input_file": "Part3/test-cases/strategy_spec.md",
+    "output_file": "prompts/K_Harish_output_02.md",
+    "evaluation": "TO FILL after verification",
+    "verification_file": "prompts/K_Harish_verification_02.md"
+  },
+  {
+    "part": "Pattern discovery (dataset audit)",
+    "model_and_date": "TO FILL",
+    "prompt_file": "prompts/S_Leela_Shankar_prompt_01.txt",
+    "input_file": "data/patterns.csv; data/pattern_counts.csv",
+    "output_file": "prompts/S_Leela_Shankar_output_01.md",
+    "evaluation": "TO FILL after verification",
+    "verification_file": "prompts/S_Leela_Shankar_verification_01.md"
+  },
+  {
+    "part": "Cross-language analysis (metrics)",
+    "model_and_date": "TO FILL",
+    "prompt_file": "prompts/S_Leela_Shankar_prompt_02.txt",
+    "input_file": "data/cross_language.csv",
+    "output_file": "prompts/S_Leela_Shankar_output_02.md",
+    "evaluation": "TO FILL after verification",
+    "verification_file": "prompts/S_Leela_Shankar_verification_02.md"
+  }
+]
