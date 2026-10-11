@@ -4,12 +4,12 @@ Case study: **Design Pattern Identification and Evolution in a Laravel-Based Pro
 
 ## Team
 
-| Student | Roll number | Batch | Allocated contribution |
-|---|---|---:|---:|
-| Earlapally Sahith Siddarth | AM.SC.U4CSE23217 | 2 | 25% |
-| Bussa Surya | AM.SC.U4CSE23213 | 2 | 25% |
-| Eati Manoj | AM.SC.U4CSE23317 | 2 | 25% |
-| Kankanala Sanithya Reddy | AM.SC.U4CSE23327 | 2 | 25% |
+| Student | Roll number | Batch |
+|---|---|---:|
+| Earlapally Sahith Siddarth | AM.SC.U4CSE23217 | 2 
+| Bussa Surya | AM.SC.U4CSE23213 | 2 
+| Eati Manoj | AM.SC.U4CSE23317 | 2 
+| Kankanala Sanithya Reddy | AM.SC.U4CSE23327 | 2 
 
 Each member has two prompt/output/verification records under `prompts/`. Technical allocation and evidence paths are recorded in `data/contributions.csv`.
 
