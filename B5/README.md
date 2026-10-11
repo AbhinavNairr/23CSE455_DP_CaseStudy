@@ -210,11 +210,4 @@ B5/
 
 The canonical CSVs are stored once under `data/` rather than duplicated inside the part folders, following the faculty note to keep one dataset folder.
 
-## Important limitations
 
-- The baseline source ZIP has no Git metadata, so exact archive-to-commit identity cannot be independently proven.
-- No live Anthropic request is claimed in final verification.
-- Scenario 2 uses fictional Atlas/Beacon provider fixtures; it performs no real reservation/payment.
-- Scenario 3 is quote-only; it performs no real cancellation/refund.
-- Historical LLM model configurations are unconfirmed where not present in the preserved records.
-- The faculty report template asks for a screenshot of the team's folder **from GitHub**. A fake screenshot is not included. After the first push, capture the genuine B5 repository view and insert it into Section 7 of `B5_Report.tex`, regenerate the PDF, and replace the report files before the final pull request.
