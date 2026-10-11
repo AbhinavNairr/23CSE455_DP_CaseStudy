@@ -108,7 +108,7 @@ def records():
         out.append(f"\\textbf{{Key code:}} {proof_tex(key[i['id']])}\\par")
         out.append(f"\\textbf{{Diagram:}} {path('Part1/uml/png/' + i['id'] + '.png')} (source in "
                    f"{path('Part1/uml/')}, Appendix~\\ref{{app:uml}}). "
-                   f"\\textbf{{Verification:}} confirmed; claims and line numbers checked in "
+                   f"\\textbf{{Verification:}} confirmed (reviewer: Gautham Mohanraj); claims and line numbers checked in "
                    f"{path('Part1/evidence/verification.csv')}, decisions in {path('Part1/notes.md')}.\\par")
     return "\n".join(out)
 
