@@ -307,41 +307,10 @@ R7 & React Context as a separate Observer & Folded into the Auth State Observer 
 
 %------------------------------------------------------------
 \section{Part 2: Evolution and refactoring}
-
-Three refactoring changes are documented under \code{Part2/changes/}.
-\begin{longtable}{@{}p{1.1cm}p{4.1cm}p{6.2cm}p{2.3cm}@{}}
-\toprule
-Change & Focus & Implementation and pattern effect & Verification recorded \\
-\midrule
-CH01 & AI provider inference & Added \code{inferProviderFromModel()} and updated \code{generateBlogPost()} to use it. This centralizes one model-to-provider inference path; the implementation record explicitly says not every provider-selection branch was refactored. Related to the existing Strategy area; do not overstate the change as a complete Strategy redesign. & 23 focused tests; 1,025 tests across 88 files; typecheck passed. \\
-CH02 & Publication validation & Extracted title checks into \code{validatePublicationTitle()} and article-content word-count checks into \code{validatePublicationContent()}. No new GoF pattern is claimed. & 30 focused tests; 1,022 tests across 88 files; typecheck passed. \\
-CH03 & Generated-post JSON parsing & Extracted common parsing and invalid-JSON handling into \code{parseGeneratedPostJson()} for the two blog-generation paths. This removes duplication; no new pattern is claimed. & 20 focused tests; 1,022 tests across 88 files; typecheck and \code{git diff --check} passed. \\
-\bottomrule
-\end{longtable}
-
-\textbf{Source snapshot note.} The uploaded Part 2 folder contains implementation notes and test evidence. However, the copied \code{code/features/ai-assistant/llmService.ts} in this archive still contains the original provider-selection branches and does not contain the helper names documented for CH01 and CH03. The Part 2 evidence is recorded, but the changed source appears not to have been merged into this copied source tree. This must be reconciled before claiming the archived source itself reflects the post-refactoring implementation.
+\todo{Not started. Three changes: article recommendation, content moderation, subscription/paywall.}
 
 \section{Part 3: Cross-language comparison}
-
-This working comparison intentionally covers two confirmed pattern types from Part 1:
-\textbf{Strategy} (LLM Provider Streaming Strategy) and \textbf{Observer} (Auth State Observer). RBAC is excluded from this Part 3 comparison to meet the requested two-pattern scope; Part 1 still records three confirmed instances overall.
-
-The Strategy example compares a provider-selection context and concrete provider strategies. The Observer example compares event subscription, notification, and unsubscribe behaviour. Both are implemented in Java and C++ with shared fixtures in \code{Part3/test-cases/common_test_cases.csv}. These are small deterministic examples of the patterns' intent, not ports of the Next.js application or real calls to LLM providers/Supabase.
-
-\begin{center}
-\begin{tabular}{@{}lrr@{}}
-\toprule
-Pattern & Java tests & C++ tests \\
-\midrule
-Strategy & 4/4 passed & 4/4 passed \\
-Observer & 4/4 passed & 4/4 passed \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-The dataset \code{Part3/cross_language.csv} records source LOC, maximum function cyclomatic complexity, toolchain version, test result, and median process time. Five raw timing runs per implementation are saved in \code{Part3/evidence/timing_raw.csv}; compilation is excluded and process startup/test execution is included. Cyclomatic complexity has been audited function-by-function using the documented McCabe rule \code{M = 1 + D}; the decision points and calculations are in \code{Part3/evidence/complexity_audit.csv} and \code{Part3/evidence/complexity_audit.md}. This is a transparent manual audit, not output from an external static-analysis package. Timing values are machine-specific and should not be treated as a general language ranking.
-
-\textbf{Language-scope limitation.} The written assignment asks for Java, Python, JavaScript, and C++. This working Part 3 bundle contains Java and C++ only. Python and JavaScript remain outstanding unless the instructor has approved the reduced scope. See \code{Part3/Part3_Report.pdf} for methodology, results, language notes, and limitations.
+\todo{Not started.}
 
 %------------------------------------------------------------
 \section{LLM records and human verification}

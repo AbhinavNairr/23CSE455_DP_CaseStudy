@@ -84,11 +84,3 @@ Numbered source listings used for line ranges: `Part1/evidence/`.
 
 ## LLM use
 Part 1 analysis used an LLM chat assistant. Exact prompts: `Part1/Part1_prompt.txt`. Evaluation of each analysis against the source: `Part1/llm.csv`.
-## Part 3 (working comparison)
-- Part 3 report: `Part3/Part3_Report.pdf` and `Part3/Part3_Report.md`.
-- This working scope compares two confirmed patterns (Strategy and Observer) in Java and C++.
-- Shared fixtures: `Part3/test-cases/common_test_cases.csv`.
-- Comparison dataset: `Part3/cross_language.csv`.
-- Raw timing and compile/test evidence: `Part3/evidence/`.
-- Important: the assignment handout requests Java, Python, JavaScript, and C++; this Java/C++ working scope is not a complete four-language submission unless an instructor-approved exception applies.
-- Part 2 evidence notes are in `Part2/changes/`; see `Part3/pattern_selection_and_part2.md` for the source-snapshot caveat.
