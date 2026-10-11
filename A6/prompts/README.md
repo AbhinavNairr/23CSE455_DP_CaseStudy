@@ -3,15 +3,20 @@
 The course rules say LLM records must be real runs ("Do not submit invented LLM records"). Every output file here is
 the actual answer of the model named in `data/llm.csv`, saved unchanged except for Markdown capture (see each file's header).
 
-## How the runs were made (2026-10-11)
-- **Claude record** - `Dilip_Kumar_Reddy_claude_*`: Dilip Kumar Reddy's own prompt to Claude Opus 5.5 in the Claude Code
-  desktop app (paid tier, not a free tool) and the model's first reply.
-- **ChatGPT records** - the 9 other prompts: team members were not available, so with Dilip's approval each prompt file
-  was pasted unchanged into a new chat on **chatgpt.com (free tier, logged out)** from Dilip's computer, with the
-  browser driven by Claude Code. The interface showed only "ChatGPT" (no model name). The member named in a file is
-  the **owner of that topic**, not the person who typed the prompt.
-- Code in the cross-language answers was extracted and actually compiled/run (`tools/run_llm_code.py`); the logs are
-  `*_coderun_02.txt`. All other claims were checked against `Part1/code`, `Part2/code` and the test results.
+
+| File | Who runs it | Part | Tool |
+|---|---|---|---|
+| `Dilip_Kumar_Reddy_claude_prompt_01.txt` | Dilip Kumar Reddy | Pattern discovery / application study | Claude Code|
+| `Dilip_Kumar_Reddy_prompt_01.txt` | Dilip Kumar Reddy | Pattern discovery | ChatGPT and claude |
+| `Sai_Sameer_prompt_01.txt` | Sai Sameer | Evolution CH01 | ChatGPT and Gemini |
+| `Sai_Sameer_prompt_02.txt` | Sai Sameer | Cross-language Observer | ChatGPT and Gemini |
+| `M_Kumar_prompt_01.txt` | M Kumar | Evolution CH02 |ChatGPT|
+| `M_Kumar_prompt_02.txt` | M Kumar | Cross-language State | ChatGPT|
+| `K_Harish_prompt_01.txt` | K Harish | Evolution CH03 |ChatGPT|
+| `K_Harish_prompt_02.txt` | K Harish | Cross-language Strategy | ChatGPT|
+| `S_Leela_Shankar_prompt_01.txt` | S Leela Shankar | Pattern discovery (dataset audit) |ChatGPT|
+| `S_Leela_Shankar_prompt_02.txt` | S Leela Shankar | Cross-language metrics |ChatGPT|
+
 
 | Topic owner | Prompt | Part | Verdict | Verification |
 |---|---|---|---|---|
