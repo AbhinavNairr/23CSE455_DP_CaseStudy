@@ -14,7 +14,7 @@
 ## Application and source
 - **Repository:** https://github.com/thepracticalengineer/nextjs-blog-cms.git
 - **Baseline commit:** `90ec6565877053ee0e93e9f09dcc7c7213aa4832`
-  (Merge pull request #102 from thepracticalengineer/codex/issue-75-searchable-tags, 8 Oct 2026)
+  (Merge pull request #102, 8 Oct 2026)
 - **Access date:** 2026-10-10
 - **License:** MIT (see `code/LICENSE`)
 - **Description:** Full-stack blog CMS with a TipTap editor, Supabase authentication (including MFA), Admin/Author roles, draft and publication workflow, comments, tags and categories, public author profiles, newsletter subscriptions, an AI writing assistant (Claude, Gemini, OpenAI) and a developer REST API.
