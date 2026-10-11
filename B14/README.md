@@ -72,7 +72,14 @@ Numbered source listings used for line ranges: `Part1/evidence/`.
 ## Rules used
 - **Counting:** one row per independent collaboration. Several concrete strategies in one collaboration count as one instance. Rejected and uncertain items are not counted as instances.
 - **Participants:** a role may be a function or module. No classes were invented. Where a role is not declared in the code (the Strategy interface) or comes from a dependency (the Observer subject), the CSV says so.
-- **LOC, complexity, timing:** [fill in for Part 3: tool, counting rule, what timing includes].
+- **Part 3 code lines and complexity:** I used Lizard 1.24.1. The count leaves out blank lines, comments and tests. Results are in `Part3/evidence/static_metrics.json`.
+- **Part 3 run time:** I ran each program once to warm it up, then timed it five times. The time includes starting the program and reading its JSON input. All times are in `Part3/evidence/timings/process_timings.json`.
+
+## Part 3
+
+My Python and JavaScript examples for Strategy and Observer are in `Part3/`.
+See `Part3/README.md` for test commands and results. Soorya still needs to add
+Java and C++. The results so far are in `data/cross_language.csv`.
 
 ## Limitations
 - Docker is not installed on the analysis machine, so local Supabase and the running app were not available. Behavior was verified from source and the unit-test suite only.
