@@ -19,3 +19,8 @@ source_version,summary,pattern_name,count
 "After CH03 shared JSON parser refactor (commit 6ce7157)",per_pattern,"Role-Based Access Control (RBAC)",1
 "After CH03 shared JSON parser refactor (commit 6ce7157)",total_pattern_types,,3
 "After CH03 shared JSON parser refactor (commit 6ce7157)",total_pattern_instances,,3
+After CH01 related-article recommendations feature (commit 68cd127),per_pattern,Strategy,1
+After CH01 related-article recommendations feature (commit 68cd127),per_pattern,Observer,1
+After CH01 related-article recommendations feature (commit 68cd127),per_pattern,Role-Based Access Control (RBAC),1
+After CH01 related-article recommendations feature (commit 68cd127),total_pattern_types,,3
+After CH01 related-article recommendations feature (commit 68cd127),total_pattern_instances,,3
