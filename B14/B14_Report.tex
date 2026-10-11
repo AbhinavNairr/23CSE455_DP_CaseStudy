@@ -307,7 +307,37 @@ R7 & React Context as a separate Observer & Folded into the Auth State Observer 
 
 %------------------------------------------------------------
 \section{Part 2: Evolution and refactoring}
-\todo{Not started. Three changes: article recommendation, content moderation, subscription/paywall.}
+
+\textbf{Scope and traceability.} The refactoring commits currently documented in Part 2 are:
+\begin{itemize}
+\item CH01 provider inference: branch \code{part2/ch01-provider-refactor}, commit \code{e7dfd1c}; changes \code{features/ai-assistant/llmService.ts} and \code{__tests__/ai-assistant/llmService.test.ts}.
+\item CH02 publication validation: branch \code{part2/ch02-publishing-workflow}, commit \code{7be15fb}; changes \code{features/posts/publication.ts}.
+\item CH03 shared generated-post JSON parsing: branch \code{part2/ch03-json-parsing-refactor}, commit \code{6ce7157}; changes \code{features/ai-assistant/llmService.ts}.
+\end{itemize}
+The reproducible commit map is in \code{Part2/code/README.md}. The source snapshot stored in \code{B14/code/} is the Part 1 baseline copy; it does not automatically include the commits on the separate application branches.
+
+\textbf{Scope mismatch requiring team/instructor confirmation.} The initial Part 2 prompt specifies CH01 article recommendations, CH02 content moderation, and CH03 subscription/paywall access control. The three refactoring commits listed above instead centralize provider inference, extract publication validation helpers, and share generated-post JSON parsing. A separate application branch \code{part2/ch01-article-recommendations}, commit \code{68cd127}, implements related-article recommendations. The evidence examined for this report does not establish that content moderation or server-side premium-content access control was implemented. This report therefore describes the confirmed code changes and does not claim that moderation or paywall requirements are complete.
+
+\subsection*{CH01: Centralize AI model-provider inference}
+\textbf{Smell and technique.} Repeated model-name inference logic; extract \code{inferProviderFromModel()} and use it in \code{generateBlogPost()}.
+\textbf{Evidence.} Commit \code{e7dfd1c} changes the LLM service and its unit tests. See \code{changes/Change1/implementation.md} and focused test logs. The latest focused log committed to this repository shows 20 tests passed; the implementation note reports 23 focused tests and a full-suite total of 1,025, which have not been reconciled with that latest log. These historical figures should not be presented as the latest result without their corresponding original logs.
+\textbf{Pattern effect.} The confirmed \emph{LLM Provider Streaming Strategy} is preserved: \code{sendMessage()} and its three streaming functions are unchanged by this commit. The helper centralizes a separate blog-generation inference responsibility; it does not, by itself, establish a new Strategy instance.
+
+\subsection*{CH02: Extract publication validation helpers}
+\textbf{Smell and technique.} The publication validation function contained inline title and readable-body checks; extract \code{validatePublicationTitle()} and \code{validatePublicationContent()} in \code{features/posts/publication.ts}.
+\textbf{Evidence.} Commit \code{7be15fb}; focused publication test evidence is in \code{changes/Change2/evidence/targeted-tests.log}. The implementation record reports 30 baseline and 30 after-refactoring publication tests, a passing typecheck, and 1,022 tests passing across 88 files. Read the test result alongside the stored raw logs.
+\textbf{Pattern effect.} This improves separation of concerns but introduces no claimed GoF pattern. The confirmed Strategy, Observer and RBAC instances are preserved.
+
+\subsection*{CH03: Extract shared generated-post JSON parsing}
+\textbf{Smell and technique.} Duplicate JSON cleanup, parsing and invalid-JSON error handling in \code{generateBlogPost()} and \code{generateBlogPostHeadless()}; extract \code{parseGeneratedPostJson()}.
+\textbf{Evidence.} Commit \code{6ce7157}; its diff shows the helper and both call sites. The latest focused log shows 20 tests passed. The full-suite total reported in \code{changes/Change3/implementation.md} is a separate recorded run and must not be inferred from the focused log.
+\textbf{Pattern effect.} The helper extraction does not introduce a GoF pattern. Strategy, Observer and RBAC remain unchanged.
+
+\subsection*{Pattern evolution and counts}
+The source-based rows and status justifications are in \code{Part2/pattern_evolution.csv}; counts use the Part 1 count schema in \code{Part2/Pattern_count.csv}. The three confirmed instances (Strategy, Observer and RBAC) remain one instance each across the three refactoring snapshots. The extracted helpers are not counted as pattern instances: names alone do not establish a pattern.
+
+\subsection*{LOC and measurement limitation}
+Commit diffs supply changed-line statistics, but a consistent before/after source LOC measurement has not yet been captured across identical paths and a declared counting rule. This report does not invent an LOC delta. To complete that metric, run the same LOC tool and counting rule against the relevant before and after commits and record the command and output. Full application runtime/end-to-end testing was not run in the baseline environment because local Supabase/Docker was unavailable, as noted in Part 1.
 
 \section{Part 3: Cross-language comparison}
 \todo{Not started.}
