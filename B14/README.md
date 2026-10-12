@@ -14,7 +14,7 @@
 ## Application and source
 - **Repository:** https://github.com/thepracticalengineer/nextjs-blog-cms.git
 - **Baseline commit:** `90ec6565877053ee0e93e9f09dcc7c7213aa4832`
-  (Merge pull request #102 from thepracticalengineer/codex/issue-75-searchable-tags, 8 Oct 2026)
+  (Merge pull request #102, 8 Oct 2026)
 - **Access date:** 2026-10-10
 - **License:** MIT (see `code/LICENSE`)
 - **Description:** Full-stack blog CMS with a TipTap editor, Supabase authentication (including MFA), Admin/Author roles, draft and publication workflow, comments, tags and categories, public author profiles, newsletter subscriptions, an AI writing assistant (Claude, Gemini, OpenAI) and a developer REST API.
@@ -72,7 +72,22 @@ Numbered source listings used for line ranges: `Part1/evidence/`.
 ## Rules used
 - **Counting:** one row per independent collaboration. Several concrete strategies in one collaboration count as one instance. Rejected and uncertain items are not counted as instances.
 - **Participants:** a role may be a function or module. No classes were invented. Where a role is not declared in the code (the Strategy interface) or comes from a dependency (the Observer subject), the CSV says so.
-- **LOC, complexity, timing:** [fill in for Part 3: tool, counting rule, what timing includes].
+- **Part 3 code lines and complexity:** I used Lizard 1.24.1. The count leaves out blank lines, comments and tests. Results are in `Part3/evidence/static_metrics.json`.
+- **Part 3 run time:** I ran each program once to warm it up, then timed it five times. The time includes starting the program and reading its JSON input. All times are in `Part3/evidence/timings/process_timings.json`.
+
+## Part 2
+
+Nivedita's change records, source commit map and test evidence are in `Part2/`.
+Read `Part2/HANDOFF.md` for the remaining scope and evidence checks.
+
+## Part 3
+
+Govind's Python and JavaScript examples and Soorya's Java and C++ examples are
+in `Part3/`. See `Part3/README.md` for code paths, test commands and results.
+The two sets use different test inputs, so the team still needs to check all
+four languages against one shared specification. `data/cross_language.csv`
+currently contains Govind's measured rows; Soorya's separate rows are in
+`Part3/cross_language.csv` until the comparison is reconciled.
 
 ## Limitations
 - Docker is not installed on the analysis machine, so local Supabase and the running app were not available. Behavior was verified from source and the unit-test suite only.

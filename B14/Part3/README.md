@@ -1,33 +1,49 @@
-# Part 3 — Cross-Language Comparison (B14)
+# Part 3: Strategy and Observer
 
-## Scope and relationship to Parts 1 and 2
+This folder contains small examples of two patterns found in the original app:
+Strategy for LLM provider streaming and Observer for auth state changes. These are
+teaching examples, not copies of the Next.js app.
 
-This working submission compares **two** confirmed Part 1 patterns, as requested:
-1. **Strategy — LLM Provider Streaming Strategy** (`code/features/ai-assistant/llmService.ts`)
-2. **Observer — Auth State Observer** (`code/features/auth/context/AuthProvider.tsx` and `AuthContext.tsx`)
+Govind wrote the Python and JavaScript examples. Soorya wrote the Java and C++
+examples. The two sets currently use different inputs and expected outputs. Each
+set has its own passing tests, but we have not yet proved that all four languages
+behave the same way. The final report must say this until one shared test set is
+used across all four languages.
 
-RBAC is intentionally omitted to keep the scope to two patterns. It is an architecture/security pattern rather than a GoF pattern.
+## Python and JavaScript
 
-The comparison examples are small, deterministic demonstrations of each pattern's intent; they are not ports of the production Next.js application or its network/Supabase dependencies.
+Code and shared JSON cases:
 
-Part 2's uploaded evidence records:
-- CH01: centralize model-to-provider inference (`inferProviderFromModel()`); its implementation note explicitly says this did not refactor every provider-selection branch.
-- CH02: extract publication title/content validation helpers; no new GoF pattern is claimed.
-- CH03: extract `parseGeneratedPostJson()` to remove duplicated JSON parsing.
+- `llm_provider_streaming/`: Strategy specification, fixtures, Python and JavaScript.
+- `auth_state_observer/`: Observer specification, fixtures, Python and JavaScript.
 
-CH02 and CH03 do not change the two selected collaborations. CH01 is relevant to the Strategy context, but the uploaded `B14/code/features/ai-assistant/llmService.ts` remains the original source snapshot and does not contain the helper described in the Part 2 implementation note. Thus the Part 3 demonstration preserves the provider-selection behaviour from the confirmed Part 1 baseline, and does not claim to benchmark the post-CH01 production source. If the team later merges the Part 2 source changes into `code/`, update the source-snapshot note and evidence links.
+From `B14/`, run:
 
-## Common test cases
+```powershell
+python Part3/llm_provider_streaming/python/test_implementation.py
+node --test Part3/llm_provider_streaming/javascript/test_implementation.mjs
+python Part3/auth_state_observer/python/test_implementation.py
+node --test Part3/auth_state_observer/javascript/test_implementation.mjs
+python Part3/verify_cross_language.py
+```
 
-`test-cases/common_test_cases.csv` is the shared language-independent specification. Java and C++ runners implement the same cases:
-- Strategy: S01–S04 (Claude, OpenAI, Gemini, unsupported provider)
-- Observer: O01–O04 (sign-in, sign-out, unsubscribe, multiple observers)
+Strategy passed 11/11 cases in each language. Observer passed 15/15 in each
+language. The Python and JavaScript process check passed 26/26 cases. Test logs
+are in `evidence/tests/`. Their measured rows are in `../data/cross_language.csv`.
+Code lines and complexity were measured with Lizard 1.24.1. One warm-up run and
+five measured runs were used for each program. Timing includes process startup,
+JSON input reading and output, but not tests or compilation. Raw values are in
+`evidence/static_metrics.json` and `evidence/timings/process_timings.json`.
 
-## Build and run
+## Java and C++
 
-Requires a JDK (`javac`, `java`) and a C++17 compiler (`g++`).
+Code and the separate CSV test specification:
 
-From this `Part3/` directory:
+- `strategy/java/` and `strategy/cpp/`: Strategy code and tests.
+- `observer/java/` and `observer/cpp/`: Observer code and tests.
+- `test-cases/common_test_cases.csv`: four cases per pattern for Java and C++.
+
+From `B14/Part3/`, compile and run with a JDK and a C++17 compiler:
 
 ```sh
 mkdir -p build/java/strategy build/java/observer build/cpp
@@ -41,24 +57,23 @@ g++ -std=c++17 -O2 -Wall -Wextra -pedantic observer/cpp/test_observer.cpp -o bui
 ./build/cpp/test_observer
 ```
 
-## Measurements
+The saved logs report 4/4 cases passed for each Java and C++ program. See
+`evidence/test_results.txt`. Their measurements and notes are in
+`cross_language.csv`, `evidence/timing_raw.csv` and
+`evidence/complexity_audit.csv`. Soorya used a manual complexity audit. His
+timings include process startup and the test runner. Those timings came from a
+different machine and measurement setup, so do not rank them against Govind's
+numbers.
 
-- LOC counts include production files only (`Strategy.java`, `AuthObserver.java`, `strategy.hpp`, `observer.hpp`), excluding blank lines and comments; test runners are excluded.
-- Cyclomatic complexity has been audited function-by-function using the documented McCabe rule `M = 1 + D`; decision points and calculations are in `evidence/complexity_audit.csv` and `evidence/complexity_audit.md`. This is a transparent manual source-level audit, not output from an external static-analysis package.
-- Timing procedure: compile before measurement; run one warm-up, then five measured process launches on the same machine. `median_process_ms` includes process startup and the test harness, and excludes compilation.
-- Raw timings are in `evidence/timing_raw.csv`; summary rows are in `cross_language.csv`.
-- The numbers are machine/environment-specific and should be regenerated on the team's submission machine if required.
-- Java and C++ timing results are not proof that one language is generally faster: process startup and runtime initialization materially affect these small examples.
+## What the team still needs to do
 
-## Important scope limitation
+1. Agree on one input, output and shared test set for all four languages.
+2. Run that test set in all four languages and update the result logs.
+3. Measure all four languages using the same timing boundary and machine.
+4. Put the final verified rows in `../data/cross_language.csv`, then update the
+   one team report and PDF.
 
-The supplied professor instructions specify Java, Python, JavaScript, and C++. This user-requested working scope includes Java and C++ only. Unless the professor has approved a reduced scope, this is not a complete four-language submission.
-
-## Evidence and AI records
-
-- `evidence/test_results.txt`: actual compile/test output from this environment.
-- `evidence/environment.txt`: tool versions.
-- `evidence/timing_raw.csv`: raw timing runs.
-- `evidence/complexity_audit.csv` and `evidence/complexity_audit.md`: method-level complexity decisions, calculations, and rule.
-- `llm/part3_prompt.txt`: reusable prompts.
-- `llm/llm.csv`: header-only template. Add actual AI interaction records only; do not invent model use or outputs.
+The original handoff request is in `SOORYA_INTEGRATION.md`. Prompt records are
+in `llm/part3_prompt.txt` for Soorya and `llm/govind_prompt.txt` for Govind.
+`llm/verification.md` records what was checked for Govind's examples. The
+team's final LLM record still needs actual inputs, outputs and verification.
