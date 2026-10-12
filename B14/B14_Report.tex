@@ -20,8 +20,8 @@
 \textbf{Team:} & B14\\
 \textbf{Case study:} & Design Pattern Identification and Evolution in a Next.js-Based\\
  & Digital News and Publishing Application\\
-\textbf{Application:} & Next.js Blog CMS (faculty approval: \todo{name, date})\\
-\textbf{Date:} & 2026-10-10\\
+\textbf{Application:} & Next.js Blog CMS\\
+\textbf{Date:} & 2026-10-12 (Part 2 updated)\\
 \textbf{Submission repository:} & 23CSE455\_DP\_CaseStudy
 \end{tabular}
 
@@ -308,41 +308,439 @@ R7 & React Context as a separate Observer & Folded into the Auth State Observer 
 %------------------------------------------------------------
 \section{Part 2: Evolution and refactoring}
 
-\textbf{Scope and traceability.} The refactoring commits currently documented in Part 2 are:
-\begin{itemize}
-\item CH01 provider inference: branch \code{part2/ch01-provider-refactor}, commit \code{e7dfd1c}; changes \code{features/ai-assistant/llmService.ts} and \code{__tests__/ai-assistant/llmService.test.ts}.
-\item CH02 publication validation: branch \code{part2/ch02-publishing-workflow}, commit \code{7be15fb}; changes \code{features/posts/publication.ts}.
-\item CH03 shared generated-post JSON parsing: branch \code{part2/ch03-json-parsing-refactor}, commit \code{6ce7157}; changes \code{features/ai-assistant/llmService.ts}.
-\end{itemize}
-The reproducible commit map is in \code{Part2/code/README.md}. The source snapshot stored in \code{B14/code/} is the Part 1 baseline copy; it does not automatically include the commits on the separate application branches.
+\textbf{Scope and traceability.} Part 2 evolves the application from the baseline
+source snapshot \code{de5bc25} in three requested areas: related-article
+recommendations, content moderation, and premium-content access control. The
+implementation is maintained in the application fork
+\url{https://github.com/nivedita-rmsh/nextjs-blog-cms}, branch
+\code{part2/content-moderation-paywall}. The latest inspected commit is
+\code{7ecfa65}. The report's baseline copy in \code{B14/code/} remains the
+Part 1 snapshot; it is not a copy of the evolved application branch. The Part 1
+pattern inventory is tied to commit
+\code{90ec6565877053ee0e93e9f09dcc7c7213aa4832}, while the Part 2 feature work
+starts from the later application commit \code{de5bc25}. These snapshots must
+not be conflated when describing the starting state.
 
-\textbf{Scope mismatch requiring team/instructor confirmation.} The initial Part 2 prompt specifies CH01 article recommendations, CH02 content moderation, and CH03 subscription/paywall access control. The three refactoring commits listed above instead centralize provider inference, extract publication validation helpers, and share generated-post JSON parsing. A separate application branch \code{part2/ch01-article-recommendations}, commit \code{68cd127}, implements related-article recommendations. The evidence examined for this report does not establish that content moderation or server-side premium-content access control was implemented. This report therefore describes the confirmed code changes and does not claim that moderation or paywall requirements are complete.
+\begin{tabular}{@{}p{1.5cm}p{3.2cm}p{2.4cm}p{7.3cm}@{}}
+\toprule
+Change & Requirement & Evidence commit & Main implementation areas\\
+\midrule
+CH01 & Article recommendations & \code{68cd127} & \code{features/posts/recommendations.ts}; \code{features/posts/components/RelatedPosts.tsx}; public article page\\
+CH02 & Content moderation & \code{376bc05}--\code{33ca044} & Moderation state, admin review page and actions, public queries, REST publication paths, Supabase migration\\
+CH03 & Premium-content access & \code{a7d6990}--\code{7ecfa65} & Premium entitlement helper, editor toggle, protected body storage, public article page and Supabase migration\\
+\bottomrule
+\end{tabular}
 
-\subsection*{CH01: Centralize AI model-provider inference}
-\textbf{Smell and technique.} Repeated model-name inference logic; extract \code{inferProviderFromModel()} and use it in \code{generateBlogPost()}.
-\textbf{Evidence.} Commit \code{e7dfd1c} changes the LLM service and its unit tests. See \code{changes/Change1/implementation.md} and focused test logs. The latest focused log committed to this repository shows 20 tests passed; the implementation note reports 23 focused tests and a full-suite total of 1,025, which have not been reconciled with that latest log. These historical figures should not be presented as the latest result without their corresponding original logs.
-\textbf{Pattern effect.} The confirmed \emph{LLM Provider Streaming Strategy} is preserved: \code{sendMessage()} and its three streaming functions are unchanged by this commit. The helper centralizes a separate blog-generation inference responsibility; it does not, by itself, establish a new Strategy instance.
+The changes are cumulative on the feature branch. The short commit IDs above
+identify the first or final relevant commits; the complete history is available
+in the application repository. Code paths and line ranges below refer to that
+branch, rather than the Part 1 baseline.
 
-\subsection*{CH02: Extract publication validation helpers}
-\textbf{Smell and technique.} The publication validation function contained inline title and readable-body checks; extract \code{validatePublicationTitle()} and \code{validatePublicationContent()} in \code{features/posts/publication.ts}.
-\textbf{Evidence.} Commit \code{7be15fb}; focused publication test evidence is in \code{changes/Change2/evidence/targeted-tests.log}. The implementation record reports 30 baseline and 30 after-refactoring publication tests, a passing typecheck, and 1,022 tests passing across 88 files. Read the test result alongside the stored raw logs.
-\textbf{Pattern effect.} This improves separation of concerns but introduces no claimed GoF pattern. The confirmed Strategy, Observer and RBAC instances are preserved.
+\subsection*{CH01: Related-article recommendations}
+\textbf{Requirement.} Show a small set of useful related articles on an article
+detail page, based on existing metadata, without recommending the current
+article, drafts, unapproved posts, or unrelated content.
 
-\subsection*{CH03: Extract shared generated-post JSON parsing}
-\textbf{Smell and technique.} Duplicate JSON cleanup, parsing and invalid-JSON error handling in \code{generateBlogPost()} and \code{generateBlogPostHeadless()}; extract \code{parseGeneratedPostJson()}.
-\textbf{Evidence.} Commit \code{6ce7157}; its diff shows the helper and both call sites. The latest focused log shows 20 tests passed. The full-suite total reported in \code{changes/Change3/implementation.md} is a separate recorded run and must not be inferred from the focused log.
-\textbf{Pattern effect.} The helper extraction does not introduce a GoF pattern. Strategy, Observer and RBAC remain unchanged.
+\textbf{Implementation.} \code{rankRelatedPosts()} in
+\code{features/posts/recommendations.ts} (lines 7--49) ranks candidates by
+shared tags and category. Each shared tag contributes two points and a shared
+category contributes one point; candidates with no positive score are removed.
+Ties are resolved by publication recency, and the result is limited to three
+posts by default. The function excludes the current article, drafts and unrelated candidates. The later CH02 moderation change adds the additional approval-state filter to recommendation candidates in the cumulative branch. The async server component
+\code{RelatedPosts} in \code{features/posts/components/RelatedPosts.tsx}
+(lines 6--23) loads published posts, applies the ranker and renders the results
+when any remain. The public detail page imports and renders the component at
+\code{app/(public)/blog/[slug]/page.tsx:14,143}.
 
-\subsection*{Pattern evolution and counts}
-The source-based rows and status justifications are in \code{Part2/pattern_evolution.csv}; counts use the Part 1 count schema in \code{Part2/Pattern_count.csv}. The three confirmed instances (Strategy, Observer and RBAC) remain one instance each across the three refactoring snapshots. The extracted helpers are not counted as pattern instances: names alone do not establish a pattern.
+\textbf{Pattern effect.} No GoF pattern is claimed as newly introduced. The
+ranker is a deterministic domain helper, not a Strategy instance: there is no
+family of interchangeable ranking algorithms selected through a common
+contract. The existing LLM Strategy, Auth State Observer and RBAC Permission
+Table are preserved. The added query/component collaboration is recorded as a
+feature-level change, not counted as another design-pattern instance.
 
-\subsection*{LOC and measurement limitation}
-Commit diffs supply changed-line statistics, but a consistent before/after source LOC measurement has not yet been captured across identical paths and a declared counting rule. This report does not invent an LOC delta. To complete that metric, run the same LOC tool and counting rule against the relevant before and after commits and record the command and output. Full application runtime/end-to-end testing was not run in the baseline environment because local Supabase/Docker was unavailable, as noted in Part 1.
+\textbf{Verification.} The focused file \code{__tests__/features/posts/recommendations.test.ts}
+contains four cases covering tag-versus-category ranking, exclusion of the
+current article and drafts, result limiting/relevance, and empty results. The
+recorded focused run showed all 4 recommendation tests passing. During the same
+pre-commit attempt, a separate author-byline test file reported two failures;
+those failures were not established as pre-existing, so the overall hook result
+must not be described as fully passing. The commit was created with hooks
+bypassed after the hook failure. A full passing post-change suite has not been
+recorded for this snapshot.
 
-\section{Part 3: Cross-language comparison}
-\todo{Not started.}
+\subsection*{CH02: Content moderation before publication}
+\textbf{Requirement.} Require administrator review before new publication
+requests become public, apply that rule to the normal editor and supported REST
+publication paths, and keep pending or rejected content out of public views.
+
+\textbf{Implementation.} The \code{moderation_status} column supports
+\code{not_submitted}, \code{pending}, \code{approved} and \code{rejected}.
+The migration \code{supabase/migrations/20261012100000_content_moderation.sql}
+(lines 1--117) backfills existing published posts as approved, defines the
+public-read policies, and updates the atomic save function so a publication
+request is stored as a draft pending review. Edits to a published article return
+it to the queue. Public post queries, category/tag listings, sitemap entries,
+recommendation candidates and the relevant REST routes filter or enforce the
+approval state; examples include \code{features/posts/queries.ts} (lines 30,
+48, 96, 117 and 148), \code{app/api/posts/create/route.ts} (lines 29--33,
+75--91 and 116--119), and \code{app/api/posts/[id]/route.ts} (lines 138--140
+and 201--208).
+
+Administrators see \code{/dashboard/admin/moderation}, implemented in
+\code{app/(dashboard)/dashboard/admin/moderation/page.tsx} (lines 8--39), with
+the review controls in \code{components/dashboard/ModerationQueue.tsx}
+(lines 20--53). The server actions in \code{features/posts/moderation-actions.ts}
+(lines 12--39 and 42--62) perform admin checks, revalidate publication fields,
+compare the row's update timestamp to avoid acting on stale content, and then
+approve/publish or reject/return the post to draft. The editor shows a pending
+moderation message instead of claiming publication succeeded.
+
+\textbf{Pattern effect.} The original RBAC Permission Table remains present; its
+three baseline participants are still the same. The moderation feature adds
+admin-role checks and database row-level security (RLS) at new enforcement
+points. These controls are not a new GoF pattern, and the new explicit admin
+checks are not presented as a complete centralization of authorization through
+\code{rolePermissions}. The existing Strategy and Observer instances are
+preserved.
+
+\textbf{Verification status.} Five unit cases were added in
+\code{__tests__/features/posts/moderation.test.ts} for state transitions and
+public visibility, and existing post-action and REST tests were adjusted.
+These focused tests were added but their run result had not been captured at the
+time of this report update. The migration has not yet been applied and verified
+against a running Supabase database. TypeScript checking passed on the cumulative
+feature branch, but this is not a substitute for running the tests or the
+migration.
+
+\subsection*{CH03: Premium-content access control}
+\textbf{Requirement.} Allow an author to mark an article premium, show a public
+preview to readers without access, and disclose the full body only to the author,
+an administrator or a user with an active premium entitlement. Newsletter
+subscription is not treated as proof of paid access.
+
+\textbf{Implementation.} The editor schema and \code{PostEditor} add an
+\code{is_premium} flag and checkbox (\code{components/dashboard/PostEditor.tsx}:
+38, 122 and 482--485). The migration
+\code{supabase/migrations/20261012103000_premium_content_access.sql}
+(lines 1--170) adds the flag to \code{posts}, creates
+\code{premium_post_contents} for full premium bodies and
+\code{premium_subscriptions} for access entitlements, and adds RLS policies for
+approved premium content and active entitlements. The atomic persistence
+function stores a premium post's full body in the protected table and leaves
+\code{posts.content} empty for that post; when a post is changed back to free,
+the full body is restored to the normal field and the premium-body row is
+removed.
+
+\code{hasPremiumAccess()} and \code{getPremiumPostBody()} in
+\code{features/premium/access.ts} (lines 5--28) check sign-in, admin/author
+access, entitlement status and optional expiry before retrieving the protected
+body. The public article page (\code{app/(public)/blog/[slug]/page.tsx}, lines
+58--60 and 119--128) renders the full content only when access is confirmed;
+otherwise it renders an excerpt and sign-in call to action. The REST detail
+endpoint remains API-key protected and scopes a post read to the API-key owner's
+posts; it is used for author operations, not anonymous public paywall access.
+
+\textbf{Scope limitation.} This change implements entitlement-based access
+control, not a payment or billing system. An active row in
+\code{premium_subscriptions} must be provisioned through an administrative or
+separate trusted process; the application does not process payments, create
+paid subscriptions, or handle renewals.
+
+\textbf{Pattern effect.} The existing Strategy, Observer and RBAC instances
+remain present. Premium entitlement checks and protected-content persistence
+are additional security/domain rules, not a demonstrated GoF pattern. No new
+pattern is counted based solely on the helper's name or on the presence of a
+subscription table.
+
+\textbf{Verification status.} Six test cases were added in
+\code{__tests__/features/premium/access.test.ts} for anonymous denial, active and
+expired entitlements, revoked entitlements, administrator access, author access
+to a protected body and denial before protected content is queried. The test file
+was added but its run result had not been captured at the time of this report
+update. The cumulative branch's TypeScript command
+\code{pnpm exec tsc --noEmit} completed with exit code 0. The new Supabase
+migrations and premium-content flows still require database/runtime verification;
+no full-suite passing result is claimed for this branch.
+
+\subsection*{Pattern evolution summary}
+The baseline inventory contains three confirmed instances: LLM Provider
+Streaming Strategy, Auth State Observer and RBAC Permission Table. Source
+inspection of the feature branch does not establish a fourth GoF instance, so
+these counts remain three across the snapshots below. The table describes the
+three confirmed Part 1 instances only; it does not count every feature module.
+
+\begin{tabular}{@{}p{3.3cm}p{2.4cm}ccc p{3.0cm}@{}}
+\toprule
+Snapshot & Commit & Strategy & Observer & RBAC & Total confirmed instances\\
+\midrule
+Baseline & \code{de5bc25} & 1 & 1 & 1 & 3\\
+After CH01 recommendations & \code{68cd127} & 1 & 1 & 1 & 3\\
+After CH02 moderation & \code{33ca044} & 1 & 1 & 1 & 3\\
+After CH03 premium access & \code{7ecfa65} & 1 & 1 & 1 & 3\\
+\bottomrule
+\end{tabular}
+
+\textbf{Status classification.} The LLM Provider Streaming Strategy and Auth
+State Observer are preserved through these changes. The RBAC Permission Table
+is also preserved as an instance: \code{rolePermissions}, \code{can},
+\code{canAccess} and \code{canAny} are not replaced by a new GoF structure.
+Moderation and premium access extend the application's authorization surface
+through explicit checks and RLS, but are not recorded as separate RBAC-pattern
+instances without evidence of a new, centralized role/permission collaboration.
+The recommendation ranker likewise remains a normal helper rather than a
+formal Strategy. The feature snapshots and counts must be reflected in the
+final machine-readable \code{pattern_evolution.csv} and \code{Pattern_count.csv};
+the current CSVs need a final consistency check against these snapshots before
+submission.
+
+\subsection*{Supporting refactoring analysis}
+In addition to the three required feature changes, three refactoring experiments
+were recorded on separate application branches. These are supplementary
+refactoring evidence and are not the CH01--CH03 feature changes above.
+
+\begin{tabular}{@{}p{3.1cm}p{4.9cm}p{5.9cm}@{}}
+\toprule
+Refactoring evidence & Code smell and technique & Pattern/verification note\\
+\midrule
+\code{e7dfd1c} & Repeated model-name inference; extract \code{inferProviderFromModel()} and use it in \code{generateBlogPost()}. & Streaming Strategy collaboration is preserved; this helper does not establish a new Strategy instance. The implementation record reports 23 focused tests and 1,025 tests across 88 files, while a subsequently stored focused log shows 20 tests; those records must be reconciled.\\
+\code{7be15fb} & Inline title and readable-body checks in publication validation; extract \code{validatePublicationTitle()} and \code{validatePublicationContent()}. & No new GoF pattern claimed. The implementation record reports 30 focused tests before and after and 1,022 tests across 88 files.\\
+\code{6ce7157} & Duplicate JSON cleanup, parsing and error handling in \code{generateBlogPost()} and \code{generateBlogPostHeadless()}; extract \code{parseGeneratedPostJson()}. & No new GoF pattern claimed. The implementation record reports 1,022 tests across 88 files; the focused log's exact branch context needs confirmation.\\
+\bottomrule
+\end{tabular}
+
+The refactoring commits have separate branch histories and are not automatically
+part of the feature branch. Supporting records reside in the existing
+\code{changes/Change1}, \code{changes/Change2} and \code{changes/Change3}
+folders. Those folder names originated with the refactoring experiments and
+should be renamed or reorganized so they cannot be confused with the required
+feature records CH01--CH03.
+
+\subsection*{LOC and remaining verification}
+A consistent before/after source-lines-of-code (LOC) metric has not yet been
+captured using an explicit counting rule across the same paths. This report does
+not invent a LOC delta. Before final submission, count production source lines
+using the same tool and rule at each stated snapshot and record the commands and
+outputs. Also run the focused tests for CH02 and CH03, investigate the two
+reported author-byline test failures alongside CH01, run the full test suite on
+the cumulative feature branch, and apply/verify both Supabase migrations against
+a test database. The baseline report's lack of a local Docker/Supabase setup
+explains why runtime verification was unavailable at that point; it does not
+prove the new database changes work.
 
 %------------------------------------------------------------
+\section{Part 3: Cross-language comparison}
+
+\textbf{Objective and scope.}
+Part 3 compares small, equivalent implementations of two confirmed
+patterns from Part 1: \textit{LLM Provider Streaming Strategy} and
+\textit{Auth State Observer}. The RBAC Permission Table is intentionally
+excluded from this working comparison to follow the team's request to
+use two patterns. The examples isolate pattern behaviour for controlled
+testing; they are not complete ports of the Next.js application and do
+not call real LLM services or Supabase.
+
+\textbf{Language scope.}
+The current implementation contains Java and C++ only. The assignment
+instructions specify Java, Python, JavaScript and C++; therefore, this
+is a two-language working comparison, not a completed four-language
+submission, unless the instructor has approved the reduced scope.
+
+%------------------------------------------------------------
+\subsection*{Selected patterns and source mapping}
+
+\textbf{Strategy --- LLM Provider Streaming Strategy.}
+Part 1 confirms this instance in
+\code{code/features/ai-assistant/llmService.ts}. The concrete provider
+functions are \code{streamClaude}, \code{streamOpenAI} and
+\code{streamGemini}; \code{sendMessage} selects a provider from
+\code{params.provider} and delegates to the corresponding function.
+The original TypeScript code has an implicit function contract and a
+hard-coded conditional chain rather than a separately declared strategy
+interface. For comparison, the Java version defines an
+\code{LlmStrategy} interface and concrete strategy classes, while the
+C++ version uses an abstract base class and concrete implementations.
+Both examples return deterministic chunks so they can be tested without
+network services. This is an explicit-pattern teaching adaptation, not
+a claim that the production TypeScript code has the same class structure.
+
+\textbf{Observer --- Auth State Observer.}
+Part 1 confirms this instance in
+\code{code/features/auth/context/AuthProvider.tsx},
+\code{AuthContext.tsx} and
+\code{code/features/auth/hooks/useSession.ts}. The original subject is
+\code{supabase.auth}, supplied by the Supabase dependency;
+\code{AuthProvider} registers the callback for
+\code{onAuthStateChange}, updates session state and unsubscribes in
+effect cleanup. The Java and C++ examples model an event source,
+listeners, event delivery and unsubscribe behaviour. They do not invent
+a subject class for the original application and do not connect to
+Supabase.
+
+%------------------------------------------------------------
+\subsection*{Relationship to Part 2}
+
+The uploaded Part 2 records describe three changes: CH01 related-article
+recommendations, CH02 content moderation, and CH03 premium-content
+access control. They also describe supplementary refactoring
+experiments involving provider inference, publication validation and
+generated-post JSON parsing. These feature changes do not establish a
+new GoF pattern for this comparison. CH01 and the provider-inference
+refactor are related to the Strategy area, but the Part 2 implementation
+notes explicitly say not every provider-selection branch was refactored.
+
+\textbf{Source-snapshot limitation.}
+The copied
+\code{B14/code/features/ai-assistant/llmService.ts} in the uploaded
+project still contains the baseline provider-selection branches and
+does not contain the helper names described in the refactoring notes.
+Consequently, the snippets below compare the verified Part 1 baseline
+behaviour and do not claim to benchmark a merged, post-refactoring
+source snapshot. The baseline and Part 2 feature branch commits are
+recorded separately in the Part 2 section and must not be conflated.
+
+%------------------------------------------------------------
+\subsection*{Common test specification}
+
+The language-independent fixture file is
+\code{Part3/test-cases/common_test_cases.csv}. Both language
+implementations use the same expected behaviour:
+
+\begin{center}
+\begin{tabular}{@{}p{1.5cm}p{4.3cm}p{8.4cm}@{}}
+\toprule
+Test ID & Pattern and input case & Expected behaviour \\
+\midrule
+S01 & Strategy: provider \code{claude}, prompt \code{hello}
+& Return chunks \code{[claude:, hello]} in order. \\
+
+S02 & Strategy: provider \code{openai}, prompt \code{hello}
+& Return chunks \code{[openai:, hello]} in order. \\
+
+S03 & Strategy: provider \code{gemini}, prompt \code{summary}
+& Return chunks \code{[gemini:, summary]} in order. \\
+
+S04 & Strategy: unknown provider
+& Reject with \code{unsupported provider: unknown}. \\
+
+O01 & Observer: sign-in event
+& Active observer receives \code{signed\_in:session-1}. \\
+
+O02 & Observer: sign-out event
+& Active observer receives \code{signed\_out:none}. \\
+
+O03 & Observer: unsubscribe then publish
+& Unsubscribed observer receives no subsequent event. \\
+
+O04 & Observer: two active observers
+& Both active observers receive the same sign-in event. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Actual test results.}
+The recorded output in \code{Part3/evidence/test_results.txt} shows:
+
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Pattern & Java & C++ \\
+\midrule
+Strategy & 4/4 passed & 4/4 passed \\
+Observer & 4/4 passed & 4/4 passed \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The test runners are
+\code{Part3/strategy/java/StrategyTest.java},
+\code{Part3/strategy/cpp/test_strategy.cpp},
+\code{Part3/observer/java/ObserverTest.java} and
+\code{Part3/observer/cpp/test_observer.cpp}.
+Production snippets and build commands are documented in
+\code{Part3/README.md}.
+
+%------------------------------------------------------------
+\subsection*{Measurement method}
+
+\begin{itemize}
+    \item \textbf{Source LOC:}
+    Counts production files only, excluding blank lines, comments,
+    preprocessor guards and test code.
+
+    \item \textbf{Cyclomatic complexity:}
+    A function-by-function manual McCabe audit uses $M=1+D$.
+    Each \code{if} and loop is one decision; each non-default
+    \code{switch} case is one decision. Abstract declarations and
+    library internals are excluded. The audit is documented in
+    \code{Part3/evidence/complexity_audit.csv} and
+    \code{Part3/evidence/complexity_audit.md}; it is not the output
+    of an external static-analysis tool.
+
+    \item \textbf{Timing:}
+    Compilation is performed before timing; one warm-up run is followed
+    by five measured process launches on the same environment. The
+    median includes process startup and the test harness but excludes
+    compilation. Raw runs are in
+    \code{Part3/evidence/timing_raw.csv}; toolchain versions are in
+    \code{Part3/evidence/environment.txt}.
+\end{itemize}
+
+%------------------------------------------------------------
+\subsection*{Results}
+
+\begin{center}
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Pattern & Language & Production LOC & Max function CC
+& Median process time (ms) \\
+\midrule
+Strategy & Java & 33 & 4 & 36.116 \\
+Observer & Java & 24 & 2 & 42.995 \\
+Strategy & C++ & 35 & 4 & 1.115 \\
+Observer & C++ & 30 & 2 & 1.070 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The maximum-complexity functions are \code{LlmContext.select()}
+(Java Strategy), \code{LlmContext::stream()} (C++ Strategy), and
+\code{AuthEventSource.publish()} for Observer in both languages.
+The Strategy selector has three non-default provider decisions in each
+version, giving a manual maximum CC of 4. The Observer publication
+loop gives a manual maximum CC of 2. The function-by-function decision
+counts are available in the audit CSV.
+
+The execution times are specific to the recorded machine and are not
+a universal language-performance ranking. These snippets are small,
+so JVM startup and runtime initialization substantially affect Java
+process times. LOC, complexity and timing alone do not establish that
+one design is better than another. The C++ Observer uses non-owning
+pointers in this teaching example; production C++ would require a clear
+lifetime and ownership policy.
+
+%------------------------------------------------------------
+\subsection*{Interpretation and limitations}
+
+Java expresses the Strategy contract through an interface and concrete
+strategy classes; C++ uses an abstract base class and virtual methods.
+Both select a provider and return the same deterministic chunks for the
+shared fixtures. Both Observer examples maintain a listener collection,
+notify active listeners and support unsubscribe. The original
+application instead uses a Supabase subscription and React Context,
+which the snippets intentionally isolate from external dependencies.
+
+The current comparison is reproducible from the source and test files
+and contains four implementation records in
+\code{Part3/cross\_language.csv} (two patterns by two languages).
+Remaining work for full assignment compliance is to implement and test
+Python and JavaScript unless the instructor has approved the reduced
+language scope; verify the manual complexity figures with a required
+static-analysis tool if the course mandates one; complete
+\code{Part3/llm/llm.csv} using actual AI interaction records; and
+reconcile the Part 2 source snapshot before describing any result as
+post-refactoring. No missing measurements or AI records are inferred
+here.
 \section{LLM records and human verification}
 
 \textbf{Run and model.} Part 1 pattern analysis used an LLM chat assistant on
@@ -358,6 +756,15 @@ the server Supabase client was unsupported, since the page calls
 \code{requirePermission} and \code{getAllUsers}, so it was removed; and an initial
 Observer guess for the user-confirmed notification fan-out was rejected after
 reading \code{route.ts}. No generated code was used in Part 1.
+
+\textbf{Part 2 records.} The intended feature scope is preserved in
+\code{Part2/Part2_prompt.txt}; source commits and test logs are referenced in
+this section and in the Part 2 change records. The raw Part 2 model-response
+transcripts were not separately archived as reproducible files when this report
+was updated, so this report does not invent model output or treat proposed
+prompts as completed model runs. The Part 2 LLM-use record and verification
+status should be checked against the actual saved chat transcripts before final
+submission.
 
 %------------------------------------------------------------
 \section{Findings, contributions and references}
@@ -378,10 +785,10 @@ from source and the unit-test suite only.
 \toprule
 Roll number & Name & Batch & Contribution\\
 \midrule
-AM.SC.U4AIE23121 & Keziah Suzaine George & AIE & \todo{actual contribution}\\
-AM.SC.U4AIE23139 & Nivedita Ramesh & AIE & \todo{actual contribution}\\
-AM.SC.U4CSE23360 & Soorya Krishna & CSE & \todo{actual contribution}\\
-AM.SC.U4CSE23309 & B R Govind & CSE & \todo{actual contribution}\\
+AM.SC.U4AIE23121 & Keziah Suzaine George & AIE & \todo{Part 1}\\
+AM.SC.U4AIE23139 & Nivedita Ramesh & AIE & \todo{Part 2}\\
+AM.SC.U4CSE23360 & Soorya Krishna & CSE & \todo{Part 3: Java and C++}\\
+AM.SC.U4CSE23309 & B R Govind & CSE & \todo{Part 3: Python and Javascript}\\
 \bottomrule
 \end{tabular}
 
@@ -396,13 +803,9 @@ AM.SC.U4CSE23309 & B R Govind & CSE & \todo{actual contribution}\\
 \end{enumerate}
 
 \section{Team folder and datasets}
-\begin{figure}[htbp]\centering
-\maybeimg{test_result/github_team_folder.png}{\linewidth}
-\caption{Team folder B14 in the course repository.}
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth]{image.png}
+    \caption{Team folder in the course repository}
 \end{figure}
-\begin{figure}[htbp]\centering
-\maybeimg{test_result/github_part1.png}{\linewidth}
-\caption{Part1 folder in the course repository.}
-\end{figure}
-
 \end{document}
