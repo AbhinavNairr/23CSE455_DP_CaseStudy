@@ -97,9 +97,11 @@ was issued for Part 2. Records: `data/llm.csv`, `LLM_RESEARCH_REFERENCES.md`,
 
 ## Contributions
 
-Per-member contributions and each member's ChatGPT research conversation are
-recorded in `CONTRIBUTIONS.md` (also summarised in `B12_Report.tex`). Roll
-numbers, names and batch (CSE) match the Students list above.
+Parts 1-3, testing, metrics and CSV validation were collaborative efforts of all
+four members; Eswar led final report preparation, integration and submission (team
+declaration). The declared work division, each member's ChatGPT research
+conversation and the evidence references are recorded in `CONTRIBUTIONS.md` (also
+summarised in `B12_Report.tex`).
 
 ## Metrics
 
