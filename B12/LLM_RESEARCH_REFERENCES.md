@@ -11,23 +11,36 @@ the shared external sources of that research and what each one is used for.
 
 ---
 
-## 1. LLM-assisted research conversation (ChatGPT, shared)
+## 1. LLM-assisted research conversations (ChatGPT, shared)
 
-- **Exact URL (preserved verbatim — do not shorten, replace or re-invent):**
-  `https://chatgpt.com/share/6aca22a9-2844-83ec-8126-e6f81ef8e85e`
-- **Title shown by the share page:** `ChatGPT - Analyze Design Patterns`
-- **Type:** LLM-assisted research conversation (ChatGPT).
-- **Access status (checked 2026-10-10):** the share link is publicly reachable
-  (HTTP 200) and the returned page embeds topic content — e.g. it contains the
-  strings `SlotAllocationStrategy`, `FirstAvailableStrategy`, and the baseline
-  commit `940daeeab52d5a0b101ce0e76813bcfac88e01a1`.
-- **Verification note:** the content of this conversation has **not** been
-  independently verified as correct. It is recorded as a research artifact only.
-- **What it supports (subject to verification):**
-  - Part 1 — candidate-pattern discussion prior to source inspection.
+Four shared ChatGPT conversations were used as AI-assisted research for Part 1
+pattern discovery (and, for the first, the Part 2/Part 3 direction). They are
+research artifacts only. **Each exact URL is preserved verbatim — do not shorten,
+replace or re-invent it.**
+
+| Member (roll number) | Title shown by the share page | Exact URL (verbatim) |
+| --- | --- | --- |
+| Samanthula Eswar (AM.SC.U4CSE23349) | `ChatGPT - Analyze Design Patterns` | `https://chatgpt.com/share/6aca22a9-2844-83ec-8126-e6f81ef8e85e` |
+| Bantupalli Harsha Vardhan (AM.SC.U4CSE23210) | `ChatGPT - Write Pattern Discovery Report` | `https://chatgpt.com/share/6acf4ad3-5900-83ee-bd23-a3440efaf33a` |
+| Rayudu Vamsi Krishna (AM.SC.U4CSE23344) | `ChatGPT - Write Pattern Discovery Report` | `https://chatgpt.com/share/6acf4a3b-0d60-83ee-af0e-eb5a739699e1?ogimg=plain` |
+| Sammeta Pavan (AM.SC.U4CSE23350) | `ChatGPT - Pattern Discovery Analysis` | `https://chatgpt.com/share/6acf5448-c740-83e8-b064-e5604a16fb75?ogimg=plain` |
+
+- **Type:** LLM-assisted research conversations (ChatGPT); the exact model and
+  date are not shown by any share page.
+- **Access status (checked 2026-10-14; the first was also checked 2026-10-10):**
+  the share links are publicly reachable and the returned pages embed topic
+  content — e.g. the first contains the strings `SlotAllocationStrategy`,
+  `FirstAvailableStrategy`, and the baseline commit
+  `940daeeab52d5a0b101ce0e76813bcfac88e01a1`.
+- **Verification note:** the content of these conversations has **not** been
+  independently verified as correct. They are recorded as research artifacts only.
+- **What they support (subject to verification):**
+  - Part 1 — candidate-pattern discussion and report drafting prior to / alongside
+    source inspection (all four conversations).
   - Part 2 — the evolution-scenario reasoning (dynamic allocation → Strategy;
     EV charging → State; occupancy monitoring → Observer).
   - Part 3 — the proposed cross-language selection (Strategy + State).
+- **Per-member mapping:** see `CONTRIBUTIONS.md`.
 
 ## 2. Original research document (DOCX)
 

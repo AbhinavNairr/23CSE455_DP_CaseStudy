@@ -89,11 +89,17 @@ pattern type"; the decision is recorded in `Part3/Part3_scope_decision_note.md`.
 
 ## LLM Usage
 
-One LLM artifact is recorded (a shared ChatGPT research conversation, treated as
-a research artifact only and not as evidence). No LLM was used to produce the
-Part 2/Part 3 code, tests or metrics, and no new prompt was issued for Part 2.
-Records: `data/llm.csv`, `LLM_RESEARCH_REFERENCES.md`, `Part1/prompts/`,
-`Part2/prompts/`, `Part3/prompts/`.
+Four LLM artifacts are recorded (the members' shared ChatGPT research
+conversations, treated as research artifacts only and not as evidence). No LLM
+was used to produce the Part 2/Part 3 code, tests or metrics, and no new prompt
+was issued for Part 2. Records: `data/llm.csv`, `LLM_RESEARCH_REFERENCES.md`,
+`CONTRIBUTIONS.md`, `Part1/prompts/`, `Part2/prompts/`, `Part3/prompts/`.
+
+## Contributions
+
+Per-member contributions and each member's ChatGPT research conversation are
+recorded in `CONTRIBUTIONS.md` (also summarised in `B12_Report.tex`). Roll
+numbers, names and batch (CSE) match the Students list above.
 
 ## Metrics
 
